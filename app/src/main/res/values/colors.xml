@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="primary_color">#8B4513</color> <!-- Brown theme for art museum -->
+    <color name="primary_dark">#654321</color>
+    <color name="accent_color">#D2691E</color>
+
+    <color name="text_primary">#212121</color>
+    <color name="text_secondary">#757575</color>
+
+    <color name="white">#FFFFFF</color>
+    <color name="background_light">#FAFAFA</color>
+    <color name="divider_color">#E0E0E0</color>
+
+    <!-- Gradient Colors -->
+    <color name="gradient_start">#5D4037</color> <!-- Dark Brown -->
+    <color name="gradient_end">#8D6E63</color>   <!-- Light Brown -->
+</resources>

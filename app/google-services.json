@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "420672382283",
+    "project_id": "test1-6e71f",
+    "storage_bucket": "test1-6e71f.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:420672382283:android:daf886baffffa1e9ac34ce",
+        "android_client_info": {
+          "package_name": "vn.edu.usth.mobilefinal"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDDqJDKhEQ154W1MP2z85CvxGNC1K_sq6Y"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

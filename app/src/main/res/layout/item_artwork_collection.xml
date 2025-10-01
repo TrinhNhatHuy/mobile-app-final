@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    app:cardCornerRadius="16dp"
+    app:cardElevation="4dp"
+    app:cardBackgroundColor="#B3FFFFFF"
+    android:layout_margin="8dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <!-- Artwork Image with Like Button -->
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="200dp">
+
+            <!-- Artwork Image -->
+            <ImageView
+                android:id="@+id/art_image"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="centerCrop"
+                android:src="@drawable/artwork_placeholder"
+                android:contentDescription="Artwork image" />
+
+            <!-- Gradient Overlay -->
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:background="@drawable/gradient_overlay_bottom"
+                android:layout_alignParentBottom="true" />
+
+            <!-- Like Button -->
+            <ImageButton
+                android:id="@+id/btnLike"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentEnd="true"
+                android:layout_margin="12dp"
+                android:background="?selectableItemBackgroundBorderless"
+                android:src="@drawable/ic_favorite_border"
+                android:contentDescription="Like artwork"
+                android:padding="8dp"
+                app:tint="@color/white" />
+
+        </RelativeLayout>
+
+        <!-- Artwork Details -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <!-- Artwork Title -->
+            <TextView
+                android:id="@+id/art_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Water Lilies"
+                android:textColor="@color/text_primary"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:layout_marginBottom="4dp" />
+
+            <!-- Artist Name -->
+            <TextView
+                android:id="@+id/art_artist"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Claude Monet"
+                android:textColor="@color/text_secondary"
+                android:textSize="14sp" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</com.google.android.material.card.MaterialCardView>
