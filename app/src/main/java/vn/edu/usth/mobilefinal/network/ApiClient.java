@@ -1,10 +1,9 @@
-package vn.edu.usth.mobilefinal;
+package vn.edu.usth.mobilefinal.network;
 
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
-import vn.edu.usth.mobilefinal.ApiService;
 
 import java.util.concurrent.TimeUnit;
 

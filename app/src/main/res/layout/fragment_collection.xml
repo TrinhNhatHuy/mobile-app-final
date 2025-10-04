@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#f5f0e6"
+    android:fitsSystemWindows="true">
+
+    <!-- Header Section -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:padding="20dp"
+        android:background="#faf5ed">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Explore Collection"
+            android:textColor="#5D4037"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            android:fontFamily="serif"
+            android:gravity="center" />
+
+    </LinearLayout>
+
+    <!-- Category Filter Chips -->
+    <com.google.android.material.chip.ChipGroup
+        android:id="@+id/chipGroupCategories"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        app:singleSelection="true">
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/chipAllCategories"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="All"
+            android:textColor="#5D4037"
+            app:chipBackgroundColor="@drawable/chip_canvas_selector"
+            app:checkedIcon="@null"
+            app:chipCornerRadius="16dp"
+            app:checkedIconEnabled="false" />
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/chipRenaissance"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Renaissance"
+            android:textColor="#5D4037"
+            app:chipBackgroundColor="@drawable/chip_canvas_selector"
+            app:checkedIcon="@null"
+            app:chipCornerRadius="16dp"
+            app:checkedIconEnabled="false" />
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/chipImpressionism"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Impressionism"
+            android:textColor="#5D4037"
+            app:chipBackgroundColor="@drawable/chip_canvas_selector"
+            app:checkedIcon="@null"
+            app:chipCornerRadius="16dp"
+            app:checkedIconEnabled="false" />
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/chipModern"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Modern"
+            android:textColor="#5D4037"
+            app:chipBackgroundColor="@drawable/chip_canvas_selector"
+            app:checkedIcon="@null"
+            app:chipCornerRadius="16dp"
+            app:checkedIconEnabled="false" />
+
+    </com.google.android.material.chip.ChipGroup>
+
+    <!-- Artworks Grid Section -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:paddingBottom="16dp">
+
+        <!-- Results Count -->
+        <TextView
+            android:id="@+id/tvResultsCount"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="All Artworks"
+            android:textColor="#5D4037"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:fontFamily="serif"
+            android:layout_marginBottom="16dp" />
+
+        <!-- Artworks Grid -->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvArtworks"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:clipToPadding="false" />
+
+        <!-- Empty State -->
+        <LinearLayout
+            android:id="@+id/emptyState"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:visibility="gone"
+            android:padding="40dp">
+
+            <ImageView
+                android:layout_width="120dp"
+                android:layout_height="120dp"
+                android:alpha="0.5"
+                android:layout_marginBottom="24dp"
+                app:tint="#8D6E63" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="No artworks found"
+                android:textColor="#5D4037"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:gravity="center"
+                android:layout_marginBottom="8dp"
+                android:fontFamily="serif" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Try selecting a different category"
+                android:textColor="#8D6E63"
+                android:textSize="14sp"
+                android:gravity="center" />
+
+        </LinearLayout>
+
+        <!-- Loading State -->
+        <ProgressBar
+            android:id="@+id/progressBar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:visibility="gone"
+            android:indeterminateTint="#7E57C2" />
+
+    </LinearLayout>
+
+    <!-- Load More Button -->
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnLoadMore"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:text="Load More Artworks"
+        android:textSize="14sp"
+        app:cornerRadius="0dp"
+        app:strokeColor="#7E57C2"
+        app:strokeWidth="1dp"
+        android:backgroundTint="#faf5ed"
+        android:textColor="#7E57C2"
+        android:layout_margin="16dp" />
+
+</LinearLayout>

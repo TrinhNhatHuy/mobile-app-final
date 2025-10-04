@@ -1,4 +1,4 @@
-package vn.edu.usth.mobilefinal;
+package vn.edu.usth.mobilefinal.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -18,7 +18,12 @@ import com.google.firebase.auth.FirebaseUser;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity {
+import vn.edu.usth.mobilefinal.Artwork;
+import vn.edu.usth.mobilefinal.adapters.ArtworkAdapter;
+import vn.edu.usth.mobilefinal.ArtworkRepository;
+import vn.edu.usth.mobilefinal.R;
+
+public class HomeActivity extends AppCompatActivity {
 
     FirebaseAuth auth;
     ImageButton button;
@@ -34,7 +39,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.fragment_home);
 
         // Firebase Auth initialization
         auth = FirebaseAuth.getInstance();
@@ -93,16 +98,16 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void loadData() {
-        Log.d("MainActivity", "Loading artwork data from Firestore for user: " + user.getEmail());
+        Log.d("HomeActivity", "Loading artwork data from Firestore for user: " + user.getEmail());
 
         artworkRepository.getPopularArtworks(new ArtworkRepository.ArtworkCallback() {
             @Override
             public void onSuccess(List<Artwork> artworks) {
-                Log.d("MainActivity", "Successfully loaded " + artworks.size() + " artworks");
+                Log.d("HomeActivity", "Successfully loaded " + artworks.size() + " artworks");
 
                 // Debug: Print artwork details
                 for (Artwork artwork : artworks) {
-                    Log.d("MainActivity", "Artwork: " + artwork.getTitle() +
+                    Log.d("HomeActivity", "Artwork: " + artwork.getTitle() +
                             ", Image URL: " + artwork.getImageUrl());
                 }
 
@@ -112,14 +117,14 @@ public class MainActivity extends AppCompatActivity {
 
                 // Show success message if artworks are loaded
                 if (!artworks.isEmpty()) {
-                    Toast.makeText(MainActivity.this, "Loaded " + artworks.size() + " artworks", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(HomeActivity.this, "Loaded " + artworks.size() + " artworks", Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
             public void onError(String error) {
-                Log.e("MainActivity", "Error loading artworks: " + error);
-                Toast.makeText(MainActivity.this, "Error loading artworks", Toast.LENGTH_SHORT).show();
+                Log.e("HomeActivity", "Error loading artworks: " + error);
+                Toast.makeText(HomeActivity.this, "Error loading artworks", Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -127,7 +132,7 @@ public class MainActivity extends AppCompatActivity {
     private void fetchArtworksFromApi() {
         // You might want to add logic to check if data needs refreshing
         // For now, we'll fetch new data every time the app starts
-        Log.d("MainActivity", "Fetching artworks from API...");
+        Log.d("HomeActivity", "Fetching artworks from API...");
         artworkRepository.fetchAndStoreArtworks();
 
         // Note: The repository will automatically trigger data reload after storing

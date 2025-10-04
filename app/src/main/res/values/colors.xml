@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="primary_color">#8B4513</color> <!-- Brown theme for art museum -->
+    <color name="primary_color">#5D4037</color>
+    <!-- Brown theme for art museum -->
     <color name="primary_dark">#654321</color>
+    <color name="secondary_color">#8D6E63</color>
     <color name="accent_color">#D2691E</color>
 
     <color name="text_primary">#212121</color>

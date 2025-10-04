@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/loginbackground"
+    android:background="#f5f0e6"
     android:fitsSystemWindows="true">
 
     <LinearLayout
@@ -27,54 +27,49 @@
                 android:layout_height="80dp"
                 android:src="@drawable/ic_art_museum"
                 android:layout_marginBottom="16dp"
-                app:tint="@color/white" />
+                app:tint="#5D4037" />
 
             <!-- App Title -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Art Institute"
-                android:textColor="@color/white"
+                android:text="ArtView"
+                android:textColor="#5D4037"
                 android:textSize="36sp"
                 android:textStyle="bold"
                 android:letterSpacing="0.02"
+                android:fontFamily="serif"
                 android:layout_marginBottom="4dp" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Chicago"
-                android:textColor="@color/white"
+                android:text="Digital Gallery"
+                android:textColor="#8D6E63"
                 android:textSize="20sp"
-                android:letterSpacing="0.03" />
+                android:letterSpacing="0.03"
+                android:fontFamily="serif" />
 
             <!-- Welcome Message -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Welcome Back"
-                android:textColor="@color/white"
+                android:textColor="#8D6E63"
                 android:textSize="16sp"
                 android:layout_marginTop="24dp"
                 android:alpha="0.9" />
 
         </LinearLayout>
 
-        <!-- Login Card with Blur Effect -->
-        <androidx.cardview.widget.CardView
+        <!-- Login Card -->
+        <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:cardCornerRadius="20dp"
-            app:cardElevation="8dp"
-            app:cardBackgroundColor="#D9FFFFFF"
+            app:cardElevation="4dp"
+            app:cardBackgroundColor="#faf5ed"
             android:layout_marginBottom="24dp">
-
-            <!-- Background for blur effect -->
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="@drawable/blur_overlay"
-                android:alpha="0.3" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -87,16 +82,17 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Sign In"
-                    android:textColor="@color/primary_color"
+                    android:textColor="#5D4037"
                     android:textSize="28sp"
                     android:textStyle="bold"
+                    android:fontFamily="serif"
                     android:layout_marginBottom="8dp" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Access your art collection"
-                    android:textColor="#AA000000"
+                    android:textColor="#8D6E63"
                     android:textSize="14sp"
                     android:layout_marginBottom="32dp" />
 
@@ -109,11 +105,12 @@
                     app:boxCornerRadiusBottomStart="12dp"
                     app:boxCornerRadiusTopEnd="12dp"
                     app:boxCornerRadiusTopStart="12dp"
-                    app:boxStrokeColor="@color/primary_color"
-                    app:hintTextColor="@color/primary_color"
+                    app:boxStrokeColor="#7E57C2"
+                    app:hintTextColor="#7E57C2"
                     app:startIconDrawable="@drawable/ic_email"
-                    app:startIconTint="@color/primary_color"
-                    app:boxBackgroundColor="#E6FFFFFF">
+                    app:startIconTint="#7E57C2"
+                    app:boxBackgroundColor="#FFFFFF"
+                    app:boxStrokeWidthFocused="2dp">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/email"
@@ -122,10 +119,9 @@
                         android:hint="Email Address"
                         android:importantForAutofill="yes"
                         android:inputType="textEmailAddress"
-                        android:textColor="@color/text_primary"
+                        android:textColor="#5D4037"
                         android:textSize="16sp"
-                        android:paddingStart="50dp"
-                        android:background="#F0FFFFFF" />
+                        android:paddingStart="50dp" />
 
                 </com.google.android.material.textfield.TextInputLayout>
 
@@ -138,13 +134,14 @@
                     app:boxCornerRadiusBottomStart="12dp"
                     app:boxCornerRadiusTopEnd="12dp"
                     app:boxCornerRadiusTopStart="12dp"
-                    app:boxStrokeColor="@color/primary_color"
-                    app:hintTextColor="@color/primary_color"
+                    app:boxStrokeColor="#7E57C2"
+                    app:hintTextColor="#7E57C2"
                     app:startIconDrawable="@drawable/ic_password"
-                    app:startIconTint="@color/primary_color"
+                    app:startIconTint="#7E57C2"
                     app:endIconMode="password_toggle"
-                    app:endIconTint="@color/primary_color"
-                    app:boxBackgroundColor="#E6FFFFFF">
+                    app:endIconTint="#7E57C2"
+                    app:boxBackgroundColor="#FFFFFF"
+                    app:boxStrokeWidthFocused="2dp">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/password"
@@ -153,30 +150,24 @@
                         android:hint="Password"
                         android:importantForAutofill="yes"
                         android:inputType="textPassword"
-                        android:textColor="@color/text_primary"
+                        android:textColor="#5D4037"
                         android:textSize="16sp"
-                        android:paddingStart="50dp"
-                        android:background="#F0FFFFFF" />
+                        android:paddingStart="50dp" />
 
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <!-- Forgot Password -->
                 <TextView
+                    android:id="@+id/tvForgotPassword"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Forgot Password?"
-                    android:textColor="@color/primary_color"
+                    android:textColor="#7E57C2"
                     android:textSize="14sp"
                     android:layout_gravity="end"
                     android:layout_marginBottom="24dp"
                     android:clickable="true"
                     android:focusable="true" />
-
-                <ProgressBar
-                    android:id="@+id/progressBar"
-                    android:visibility="gone"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
 
                 <!-- Login Button -->
                 <com.google.android.material.button.MaterialButton
@@ -190,8 +181,18 @@
                     app:icon="@drawable/ic_login"
                     app:iconGravity="textStart"
                     app:iconPadding="8dp"
-                    android:backgroundTint="@color/primary_color"
+                    android:backgroundTint="#7E57C2"
+                    android:textColor="#FFFFFF"
                     android:layout_marginBottom="16dp" />
+
+                <!-- Loading Progress -->
+                <ProgressBar
+                    android:id="@+id/progressBar"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:visibility="gone"
+                    android:indeterminateTint="#7E57C2" />
 
                 <!-- Divider -->
                 <LinearLayout
@@ -199,19 +200,20 @@
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
                     android:gravity="center"
-                    android:layout_marginBottom="16dp">
+                    android:layout_marginBottom="16dp"
+                    android:layout_marginTop="8dp">
 
                     <View
                         android:layout_width="0dp"
                         android:layout_height="1dp"
                         android:layout_weight="1"
-                        android:background="#1A000000" />
+                        android:background="#1A5D4037" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="OR"
-                        android:textColor="#66000000"
+                        android:textColor="#8D6E63"
                         android:textSize="12sp"
                         android:paddingStart="16dp"
                         android:paddingEnd="16dp" />
@@ -220,7 +222,7 @@
                         android:layout_width="0dp"
                         android:layout_height="1dp"
                         android:layout_weight="1"
-                        android:background="#1A000000" />
+                        android:background="#1A5D4037" />
 
                 </LinearLayout>
 
@@ -232,29 +234,32 @@
                     android:gravity="center"
                     android:layout_marginBottom="24dp">
 
+                    <!--login by Google
                     <com.google.android.material.button.MaterialButton
                         android:layout_width="0dp"
                         android:layout_height="50dp"
                         android:layout_weight="1"
                         android:text="Google"
-                        android:textColor="@color/text_primary"
+                        android:textColor="#5D4037"
                         app:cornerRadius="12dp"
-                        app:strokeColor="#33000000"
+                        app:strokeColor="#1A5D4037"
                         app:strokeWidth="1dp"
-                        android:backgroundTint="#F5FFFFFF"
+                        android:backgroundTint="#FFFFFF"
                         android:layout_marginEnd="8dp" />
-
+                        -->
+                    <!--login by Facebook
                     <com.google.android.material.button.MaterialButton
                         android:layout_width="0dp"
                         android:layout_height="50dp"
                         android:layout_weight="1"
                         android:text="Facebook"
-                        android:textColor="@color/text_primary"
+                        android:textColor="#5D4037"
                         app:cornerRadius="12dp"
-                        app:strokeColor="#33000000"
+                        app:strokeColor="#1A5D4037"
                         app:strokeWidth="1dp"
-                        android:backgroundTint="#F5FFFFFF"
+                        android:backgroundTint="#FFFFFF"
                         android:layout_marginStart="8dp" />
+                    -->
 
                 </LinearLayout>
 
@@ -269,7 +274,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Don't have an account?"
-                        android:textColor="#99000000"
+                        android:textColor="#8D6E63"
                         android:textSize="14sp" />
 
                     <TextView
@@ -277,7 +282,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Sign Up"
-                        android:textColor="@color/primary_color"
+                        android:textColor="#7E57C2"
                         android:textSize="14sp"
                         android:textStyle="bold"
                         android:clickable="true"
@@ -288,7 +293,7 @@
 
             </LinearLayout>
 
-        </androidx.cardview.widget.CardView>
+        </com.google.android.material.card.MaterialCardView>
 
         <!-- Skip Login -->
         <TextView
@@ -296,12 +301,12 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Skip login → Explore artworks"
-            android:textColor="@color/white"
+            android:textColor="#7E57C2"
             android:textSize="14sp"
+            android:textStyle="bold"
             android:layout_gravity="center_horizontal"
             android:clickable="true"
             android:focusable="true"
-            android:alpha="0.9"
             android:padding="16dp" />
 
     </LinearLayout>
