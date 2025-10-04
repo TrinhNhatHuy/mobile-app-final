@@ -252,7 +252,6 @@
                     android:textSize="16sp"
                     android:textStyle="bold"
                     app:cornerRadius="12dp"
-                    app:icon="@drawable/ic_person_add"
                     app:iconGravity="textStart"
                     app:iconPadding="8dp"
                     android:backgroundTint="#7E57C2"

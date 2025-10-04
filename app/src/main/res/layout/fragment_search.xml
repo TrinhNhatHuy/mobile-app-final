@@ -62,7 +62,6 @@
                 android:hint="Search artworks, artists, styles..."
                 android:textColor="#5D4037"
                 android:textSize="16sp"
-                android:hintTextColor="#8D6E63"
                 android:background="@null"
                 android:padding="0dp"
                 android:maxLines="1" />
