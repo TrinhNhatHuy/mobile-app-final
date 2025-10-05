@@ -24,6 +24,7 @@ import vn.edu.usth.mobilefinal.Artwork;
 import vn.edu.usth.mobilefinal.ArtworkRepository;
 import vn.edu.usth.mobilefinal.R;
 import vn.edu.usth.mobilefinal.adapters.ArtworkAdapter;
+import vn.edu.usth.mobilefinal.activities.HomeActivity;
 
 public class HomeFragment extends Fragment {
 
@@ -66,43 +67,47 @@ public class HomeFragment extends Fragment {
     }
 
     private void setupRecyclerView() {
-        // Setup Popular Artworks RecyclerView
         recyclerPopular.setLayoutManager(new LinearLayoutManager(
                 getContext(),
                 LinearLayoutManager.HORIZONTAL,
                 false
         ));
 
-        // Create adapter with both parameters
         popularAdapter = new ArtworkAdapter(
                 new ArrayList<>(),
-                new ArtworkAdapter.OnItemClickListener() {
-                    @Override
-                    public void onItemClick(Artwork artwork) {
-                        // Handle item click here
-                        Toast.makeText(getContext(), "Clicked: " + artwork.getTitle(), Toast.LENGTH_SHORT).show();
-                        // You can navigate to detail activity/fragment here
+                artwork -> {
+                    // Mở chi tiết artwork
+                    if (getActivity() instanceof HomeActivity) {
+                        ((HomeActivity) getActivity()).openArtworkDetails(artwork);
                     }
                 }
         );
+
         recyclerPopular.setAdapter(popularAdapter);
     }
-
     private void loadUserData() {
         FirebaseUser currentUser = mAuth.getCurrentUser();
+
         if (currentUser != null) {
             String displayName = currentUser.getDisplayName();
             String email = currentUser.getEmail();
+            String initial = "?"; // giá trị mặc định
 
-            if (displayName != null && !displayName.isEmpty()) {
-                tvUserName.setText(displayName);
-            } else if (email != null) {
-                // Use email username part as display name
-                String username = email.split("@")[0];
-                tvUserName.setText(username);
+            if (displayName != null && !displayName.trim().isEmpty()) {
+                // Lấy chữ cái đầu của tên (trim và viết hoa)
+                initial = displayName.trim().substring(0, 1).toUpperCase();
+            } else if (email != null && !email.trim().isEmpty()) {
+                // Lấy phần trước @ của email, rồi lấy chữ cái đầu
+                String usernamePart = email.split("@")[0];
+                if (!usernamePart.isEmpty()) {
+                    initial = usernamePart.trim().substring(0, 1).toUpperCase();
+                }
             }
+
+            tvUserName.setText(initial);
         }
     }
+
 
     private void initializeArtworkData() {
         // Check if we have data and load popular artworks
