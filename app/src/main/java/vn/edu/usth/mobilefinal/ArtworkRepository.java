@@ -57,7 +57,6 @@ public class ArtworkRepository {
                         artworks.add(artwork);
                     }
 
-                    // Store in Firestore
                     for (Artwork artwork : artworks) {
                         db.collection("artworks")
                                 .document(artwork.getId())

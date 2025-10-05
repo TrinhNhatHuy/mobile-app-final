@@ -41,25 +41,21 @@ public class HomeActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.fragment_home);
 
-        // Firebase Auth initialization
         auth = FirebaseAuth.getInstance();
         button = findViewById(R.id.logout);
         textView = findViewById(R.id.tvUserName);
         user = auth.getCurrentUser();
 
-        // Check if user is logged in
         if(user == null) {
             Intent intent = new Intent(getApplicationContext(), Login.class);
             startActivity(intent);
             finish();
-            return; // Exit early if user is not logged in
+            return;
         }
         else {
-            // Set user email or display name
             textView.setText(user.getEmail());
         }
 
-        // Logout button listener
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -70,12 +66,10 @@ public class HomeActivity extends AppCompatActivity {
             }
         });
 
-        // Initialize artwork functionality AFTER auth check
         initializeArtworkViews();
         setupRecyclerView();
         loadData();
 
-        // Fetch and store artworks from API
         fetchArtworksFromApi();
     }
 
@@ -105,7 +99,6 @@ public class HomeActivity extends AppCompatActivity {
             public void onSuccess(List<Artwork> artworks) {
                 Log.d("HomeActivity", "Successfully loaded " + artworks.size() + " artworks");
 
-                // Debug: Print artwork details
                 for (Artwork artwork : artworks) {
                     Log.d("HomeActivity", "Artwork: " + artwork.getTitle() +
                             ", Image URL: " + artwork.getImageUrl());
@@ -115,7 +108,6 @@ public class HomeActivity extends AppCompatActivity {
                 popularArtworks.addAll(artworks);
                 popularAdapter.setArtworkList(popularArtworks);
 
-                // Show success message if artworks are loaded
                 if (!artworks.isEmpty()) {
                     Toast.makeText(HomeActivity.this, "Loaded " + artworks.size() + " artworks", Toast.LENGTH_SHORT).show();
                 }
@@ -130,30 +122,18 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     private void fetchArtworksFromApi() {
-        // You might want to add logic to check if data needs refreshing
-        // For now, we'll fetch new data every time the app starts
         Log.d("HomeActivity", "Fetching artworks from API...");
         artworkRepository.fetchAndStoreArtworks();
 
-        // Note: The repository will automatically trigger data reload after storing
     }
 
     private void showArtworkDetails(Artwork artwork) {
-        // Navigate to detail screen or show dialog
         Toast.makeText(this, "Clicked: " + artwork.getTitle() + " by " + artwork.getArtist(), Toast.LENGTH_SHORT).show();
 
-        // Example: Start detail activity (you can implement this later)
-        /*
-        Intent intent = new Intent(this, ArtworkDetailActivity.class);
-        intent.putExtra("artwork", artwork);
-        startActivity(intent);
-        */
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        // Optional: Refresh data when returning to the activity
-        // loadData();
     }
 }
