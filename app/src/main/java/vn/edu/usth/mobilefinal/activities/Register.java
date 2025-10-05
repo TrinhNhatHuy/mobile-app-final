@@ -3,6 +3,7 @@ package vn.edu.usth.mobilefinal.activities;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Patterns;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ProgressBar;
@@ -15,6 +16,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -23,7 +25,8 @@ import vn.edu.usth.mobilefinal.R;
 
 public class Register extends AppCompatActivity {
 
-    TextInputEditText editTextEmail, editTextPassword;
+    TextInputEditText editTextEmail, editTextPassword, confirmPasswordText;
+    TextInputLayout emailLayout, passwordLayout;
     Button buttonSig;
     FirebaseAuth mAuth;
     ProgressBar progressBar;
@@ -50,6 +53,9 @@ public class Register extends AppCompatActivity {
         buttonSig = findViewById(R.id.btn_signup);
         progressBar = findViewById(R.id.progressBar);
         textView =findViewById(R.id.loginNow);
+        confirmPasswordText = findViewById(R.id.confirm_password);
+        emailLayout = findViewById(R.id.emailLayout);
+        passwordLayout = findViewById(R.id.passwordLayout);
 
         textView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -66,18 +72,36 @@ public class Register extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 progressBar.setVisibility(View.VISIBLE);
-                String email, password;
+                String email, password, confirmPassword;
                 email = String.valueOf(editTextEmail.getText());
                 password = String.valueOf(editTextPassword.getText());
-
-                if (TextUtils.isEmpty(email)) {
-                    Toast.makeText(Register.this, "Enter email", Toast.LENGTH_SHORT).show();
-                    return;
-                }
+                confirmPassword = String.valueOf(confirmPasswordText.getText());
 
                 if (TextUtils.isEmpty(password)) {
-                    Toast.makeText(Register.this, "Enter password", Toast.LENGTH_SHORT).show();
+                    passwordLayout.setError("Password can't be empty");
+                    progressBar.setVisibility(View.GONE);
                     return;
+                } else if (password.length() < 6) {
+                    passwordLayout.setError("Password must be at least 6 characters");
+                    progressBar.setVisibility(View.GONE);
+                    return;
+                } else if (!password.equals(confirmPassword)) {
+                    passwordLayout.setError("Passwords do not match");
+                    progressBar.setVisibility(View.GONE);
+                    return;
+                } else {
+                    passwordLayout.setError(null);
+                }
+                if (TextUtils.isEmpty(email)) {
+                    emailLayout.setError("Email can't be empty");
+                    progressBar.setVisibility(View.GONE);
+                    return;
+                } else if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+                    emailLayout.setError("Invalid email");
+                    progressBar.setVisibility(View.GONE);
+                    return;
+                } else {
+                    emailLayout.setError(null);
                 }
 
                 mAuth.createUserWithEmailAndPassword(email, password)
@@ -99,8 +123,6 @@ public class Register extends AppCompatActivity {
                             }
                         });
             }
-
-
         });
     }
 
