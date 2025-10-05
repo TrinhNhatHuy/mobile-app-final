@@ -116,4 +116,25 @@ public class ArtworkRepository {
                     callback.onError(e.getMessage());
                 });
     }
+
+    public void initializeArtworkData(ArtworkCallback callback) {
+        // Check if we already have data in Firestore
+        db.collection("artworks")
+                .limit(1)
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    if (queryDocumentSnapshots.isEmpty()) {
+                        // No data found, fetch from API
+                        android.util.Log.d("ArtworkRepository", "No artworks found, fetching from API...");
+                        fetchAndStoreArtworks();
+                        callback.onSuccess(new ArrayList<>()); // Return empty list while loading
+                    } else {
+                        android.util.Log.d("ArtworkRepository", "Artworks already exist in database");
+                        callback.onSuccess(new ArrayList<>()); // Data exists, proceed
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    callback.onError("Error checking database: " + e.getMessage());
+                });
+    }
 }

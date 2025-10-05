@@ -14,7 +14,7 @@ import vn.edu.usth.mobilefinal.Artwork;
 import vn.edu.usth.mobilefinal.R;
 
 public class ArtworkAdapter extends RecyclerView.Adapter<ArtworkAdapter.ArtworkViewHolder> {
-    private List<Artwork> artworks;
+    private List<Artwork> artworks; // This is the field name used everywhere
     private OnItemClickListener onItemClickListener;
 
     public interface OnItemClickListener {
@@ -45,8 +45,9 @@ public class ArtworkAdapter extends RecyclerView.Adapter<ArtworkAdapter.ArtworkV
         return artworks.size();
     }
 
-    public void updateData(List<Artwork> newArtworks) {
-        this.artworks = newArtworks;
+    // Remove the duplicate method and keep only one
+    public void setArtworkList(List<Artwork> artworkList) {
+        this.artworks = artworkList; // Fixed: changed 'artworkList' to 'artworks'
         notifyDataSetChanged();
     }
 

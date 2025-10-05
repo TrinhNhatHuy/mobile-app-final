@@ -113,7 +113,7 @@ public class HomeActivity extends AppCompatActivity {
 
                 popularArtworks.clear();
                 popularArtworks.addAll(artworks);
-                popularAdapter.updateData(popularArtworks);
+                popularAdapter.setArtworkList(popularArtworks);
 
                 // Show success message if artworks are loaded
                 if (!artworks.isEmpty()) {
