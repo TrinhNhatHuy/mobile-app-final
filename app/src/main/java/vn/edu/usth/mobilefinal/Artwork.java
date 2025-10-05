@@ -1,5 +1,5 @@
 package vn.edu.usth.mobilefinal;
-public class Artwork {
+public class Artwork implements java.io.Serializable{
     private String id;
     private String title;
     private String artist;
@@ -38,7 +38,20 @@ public class Artwork {
     public String getDate() { return date; }
     public void setDate(String date) { this.date = date; }
 
-    public String getDescription() { return description; }
+    public String getDescription() {
+        if (description != null && !description.trim().isEmpty()) return description.trim();
+
+        StringBuilder s = new StringBuilder();
+        if (title != null && !title.isEmpty()) s.append(title);
+        if (artist != null && !artist.isEmpty()) {
+            if (s.length() > 0) s.append(" by ");
+            s.append(artist);
+        }
+        if (date != null && !date.isEmpty()) s.append(" (").append(date).append(")");
+
+        String out = s.toString().trim();
+        return out.isEmpty() ? "Details unavailable." : out;
+    }
     public void setDescription(String description) { this.description = description; }
 
     public String getCategory() { return category; }

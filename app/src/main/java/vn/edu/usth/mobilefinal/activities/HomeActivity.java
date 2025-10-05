@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -128,7 +129,10 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     private void showArtworkDetails(Artwork artwork) {
-        Toast.makeText(this, "Clicked: " + artwork.getTitle() + " by " + artwork.getArtist(), Toast.LENGTH_SHORT).show();
+//        Toast.makeText(this, "Clicked: " + artwork.getTitle() + " by " + artwork.getArtist(), Toast.LENGTH_SHORT).show();
+        Intent intent = new Intent(this,ArtWork_Details.class);
+        intent.putExtra("artwork", artwork);
+        startActivity(intent);
 
     }
 
