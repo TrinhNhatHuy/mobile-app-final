@@ -49,4 +49,4 @@ public class HomeActivity extends AppCompatActivity {
 
 // thêm lại fetchapi
 // thêm Artwork of the Day
-// sửa nut back ở popular artwork
+// sửa nut back ở popular artwork ( DONE)
