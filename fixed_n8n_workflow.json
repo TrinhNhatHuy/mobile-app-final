@@ -1,0 +1,667 @@
+{
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -4480,
+        192
+      ],
+      "id": "3c75c9e9-4ba3-490d-b294-2817e6f1448a",
+      "name": "When clicking 'Execute workflow'"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "minutes",
+              "minutesInterval": 30
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -4480,
+        384
+      ],
+      "id": "08c0e92d-eea4-4d50-8d42-9879ad4c749c",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "INSERT IGNORE INTO channel (id, name) \nVALUES ('THVL1', 'Truyền hình Vĩnh Long 1');",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.mySql",
+      "typeVersion": 2.5,
+      "position": [
+        -4256,
+        288
+      ],
+      "id": "4f0bf897-4bfa-46da-b4e7-75fdd9ba3d61",
+      "name": "Insert Channel",
+      "credentials": {
+        "mySql": {
+          "id": "WeXmgYhxDmImsqwd",
+          "name": "THVL1"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Configure how many days ahead to check\nconst maxDaysToCheck = 7; // Maximum days to check ahead\nconst currentDate = new Date();\nconst dates = [];\n\n// Generate dates starting from today\nfor (let i = 0; i < maxDaysToCheck; i++) {\n  const date = new Date(currentDate);\n  date.setDate(currentDate.getDate() + i);\n  const dateStr = date.toISOString().split('T')[0];\n  \n  dates.push({\n    json: {\n      date: dateStr,\n      dateStr: dateStr.replace(/-/g, ''),\n      dayOffset: i,\n      checked: false,\n      hasData: false\n    }\n  });\n}\n\nconsole.log(`Generated ${dates.length} dates to check`);\nreturn dates;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -4032,
+        288
+      ],
+      "id": "e6f26508-7309-41b4-be58-83d616dc3b6c",
+      "name": "Generate Date Range"
+    },
+    {
+      "parameters": {
+        "options": {
+          "reset": false
+        }
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        -3808,
+        288
+      ],
+      "id": "d5c98c89-9ed9-4bc5-8f3e-8c48187f3aee",
+      "name": "Split In Batches"
+    },
+    {
+      "parameters": {
+        "url": "=https://www.thvl.vn/lichphatsong.php?ngay={{ $json.date }}&kenh=THVL1",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -3584,
+        -48
+      ],
+      "id": "67178a8d-364b-4106-91e2-3793722cea41",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Get the input data\nconst input = $input.first().json;\nconst batchData = $('Split In Batches').item.json;\n\n// The HTTP response stores HTML in the 'data' field\nconst htmlContent = input.data || '';\n\n// Log for debugging\nconsole.log('HTML Content length:', htmlContent.length);\nconsole.log('Has title span:', htmlContent.includes('<span class=\"title\">'));\nconsole.log('Has time span:', htmlContent.includes('<span class=\"time\">'));\n\nconst date = batchData.date;\n\n// Check if schedule exists\nconst hasTitle = htmlContent.includes('<span class=\"title\">');\nconst hasTime = htmlContent.includes('<span class=\"time\">');\nconst hasSchedule = hasTitle && hasTime;\n\nconsole.log(`Checking date: ${date}, hasSchedule: ${hasSchedule}`);\n\n// Return data with schedule status\nreturn [{ json: { \n  skipProcessing: !hasSchedule, \n  date: date, \n  dateStr: batchData.dateStr,\n  htmlContent: htmlContent,\n  hasData: hasSchedule,\n  data: input.data, // Keep original data for downstream nodes\n  dayOffset: batchData.dayOffset\n} }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -3360,
+        -48
+      ],
+      "id": "e47978fa-23c5-44ac-b59a-88c29ee5ba0c",
+      "name": "Check Schedule Exists"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "id": "de455a2e-3630-4e90-866c-95d31ed5057d",
+              "leftValue": "={{ $json.skipProcessing }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equal",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        -3136,
+        -48
+      ],
+      "id": "718f89f1-ea11-4432-b9b0-aed075ec10b7",
+      "name": "Has Schedule Data?"
+    },
+    {
+      "parameters": {
+        "jsCode": "// This node processes the schedule data when it exists\nconst input = $input.first().json;\nconst htmlContent = input.htmlContent;\n\nconsole.log(`Processing schedule data for date: ${input.date}`);\n\n// Extract block items from HTML\nconst blockItems = [];\nconst liMatches = htmlContent.match(/<li[^>]*>.*?<\\/li>/gs) || [];\n\nliMatches.forEach(block => {\n  const nameMatch = block.match(/<span class=\"title\">([^<]+)<\\/span>/);\n  const timeMatch = block.match(/<span class=\"time\">([^<]+)<\\/span>/);\n  \n  if (nameMatch && timeMatch) {\n    blockItems.push({\n      name: nameMatch[1].trim(),\n      time: timeMatch[1].trim()\n    });\n  }\n});\n\nconsole.log(`Found ${blockItems.length} programs for ${input.date}`);\n\n// Return the extracted data\nreturn [{ json: {\n  date: input.date,\n  dateStr: input.dateStr,\n  dayOffset: input.dayOffset,\n  hasData: true,\n  blockItems: blockItems,\n  htmlContent: htmlContent\n} }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -2688,
+        -48
+      ],
+      "id": "a4651f8c-13e8-4b03-94c9-b6f67e5fe912",
+      "name": "Extract Schedule Data"
+    },
+    {
+      "parameters": {
+        "jsCode": "const input = $input.first().json;\nconst blockItems = input.blockItems || [];\nconst channel = 'THVL1';\nconst baseDate = input.date;\nconst dateStr = input.dateStr;\n\nconsole.log(`Processing ${blockItems.length} programs for date: ${baseDate}`);\n\nfunction formatDateTime(dateStr, timeStr) {\n  const [year, month, day] = dateStr.split('-');\n  const [hours, minutes] = timeStr.split(':');\n  return `${year}${month}${day}${hours}${minutes}00`;\n}\n\nfunction formatEndOfDay(dateStr) {\n  const [year, month, day] = dateStr.split('-');\n  return `${year}${month}${day}235959`;\n}\n\nfunction convertToMySQLDateTime(isoString) {\n  const date = new Date(isoString);\n  return date.toISOString().replace('T', ' ').replace('Z', '').slice(0, 19);\n}\n\nconst currentTime = convertToMySQLDateTime(new Date().toISOString());\nconst programs = [];\n\nfor (let i = 0; i < blockItems.length; i++) {\n  const currentBeginTime = blockItems[i].time;\n  let endTime;\n  \n  if (i < blockItems.length - 1) {\n    endTime = formatDateTime(baseDate, blockItems[i + 1].time);\n  } else {\n    endTime = formatEndOfDay(baseDate);\n  }\n  \n  programs.push({\n    json: {\n      channel_id: channel,\n      begin_time: formatDateTime(baseDate, currentBeginTime),\n      end_time: endTime,\n      name: blockItems[i].name,\n      content: \"\",\n      create_time: currentTime,\n      update_time: currentTime,\n      target_date: dateStr,\n      dayOffset: input.dayOffset\n    }\n  });\n}\n\nconsole.log(`Successfully processed ${programs.length} programs for ${baseDate}`);\nreturn programs;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -2464,
+        -48
+      ],
+      "id": "455bc621-c950-4591-8559-ec668a0db5b9",
+      "name": "Extract Program Details"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "=SELECT channel_id, begin_time, end_time, name, content\nFROM program \nWHERE channel_id = 'THVL1' \n  AND begin_time LIKE '{{ $('Extract Program Details').first().json.target_date }}%'\nORDER BY begin_time;",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.mySql",
+      "typeVersion": 2.5,
+      "position": [
+        -2240,
+        -144
+      ],
+      "id": "e802182d-4984-43dd-8f3f-9dc2328418aa",
+      "name": "Get Old Programs",
+      "alwaysOutputData": true,
+      "executeOnce": true,
+      "credentials": {
+        "mySql": {
+          "id": "WeXmgYhxDmImsqwd",
+          "name": "THVL1"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const newPrograms = $('Extract Program Details').all().map(item => item.json);\nconst oldProgramsResult = $('Get Old Programs').all();\nconst oldPrograms = oldProgramsResult.length > 0 ? oldProgramsResult.map(item => item.json) : [];\n\nconst channel = 'THVL1';\nconst dateStr = $('Extract Program Details').first().json.target_date;\n\nfunction convertToMySQLDateTime(date) {\n  return date.toISOString().replace('T', ' ').replace('Z', '').slice(0, 19);\n}\n\nconst currentTime = convertToMySQLDateTime(new Date());\n\nconst RescheduleLogStatus = {\n  CHANGED: 'CHANGED',\n  DELETED: 'DELETED',\n  ADDED: 'ADDED'\n};\n\nfunction detectChangeProgram(oldPrograms, newPrograms, channelId, dateStr) {\n  const rescheduleLogs = [];\n\n  if (!oldPrograms || oldPrograms.length === 0 || !newPrograms || newPrograms.length === 0) {\n    console.log('One or both program lists are empty - skipping comparison');\n    return rescheduleLogs;\n  }\n\n  const filteredNewPrograms = newPrograms\n    .filter(p => p.begin_time && p.begin_time.startsWith(dateStr))\n    .sort((a, b) => a.begin_time.localeCompare(b.begin_time));\n\n  const diff = oldPrograms.length - filteredNewPrograms.length;\n  const maxSize = Math.max(oldPrograms.length, filteredNewPrograms.length);\n\n  for (let h = 0; h < maxSize; h++) {\n    try {\n      const oldProgram = oldPrograms[h];\n      const newProgram = filteredNewPrograms[h];\n\n      if (oldProgram && newProgram) {\n        const beginChanged = oldProgram.begin_time !== newProgram.begin_time;\n        const endChanged = oldProgram.end_time !== newProgram.end_time;\n        const nameChanged = oldProgram.name !== newProgram.name;\n        const contentChanged = (oldProgram.content || '') !== (newProgram.content || '');\n\n        if (beginChanged || endChanged || nameChanged || contentChanged) {\n          rescheduleLogs.push({\n            name: newProgram.name,\n            content: newProgram.content || '',\n            original_begin_time: oldProgram.begin_time,\n            original_end_time: oldProgram.end_time,\n            original_name: oldProgram.name,\n            original_content: oldProgram.content || '',\n            begin_time: newProgram.begin_time,\n            end_time: newProgram.end_time,\n            channel_id: channelId,\n            create_time: currentTime,\n            update_time: currentTime,\n            status: RescheduleLogStatus.CHANGED\n          });\n          console.log(`[CHANGED] ${oldProgram.name} -> ${newProgram.name}`);\n        }\n      }\n    } catch (e) {\n      console.error(`Error at index ${h}:`, e.message);\n      break;\n    }\n  }\n\n  if (diff > 0) {\n    const deletedPrograms = oldPrograms.slice(oldPrograms.length - diff);\n\n    for (const p of deletedPrograms) {\n      rescheduleLogs.push({\n        name: null,\n        content: null,\n        original_begin_time: p.begin_time,\n        original_end_time: p.end_time,\n        original_name: p.name,\n        original_content: p.content || '',\n        begin_time: null,\n        end_time: null,\n        channel_id: channelId,\n        create_time: currentTime,\n        update_time: currentTime,\n        status: RescheduleLogStatus.DELETED\n      });\n      console.log(`[DELETED] ${p.name} (${p.begin_time})`);\n    }\n  }\n  \n  else if (diff < 0) {\n    const addedCount = Math.abs(diff);\n    const addedPrograms = filteredNewPrograms.slice(filteredNewPrograms.length - addedCount);\n\n    for (const p of addedPrograms) {\n      rescheduleLogs.push({\n        name: p.name,\n        content: p.content || '',\n        original_begin_time: null,\n        original_end_time: null,\n        original_name: null,\n        original_content: null,\n        begin_time: p.begin_time,\n        end_time: p.end_time,\n        channel_id: channelId,\n        create_time: currentTime,\n        update_time: currentTime,\n        status: RescheduleLogStatus.ADDED\n      });\n      console.log(`[ADDED] ${p.name} (${p.begin_time})`);\n    }\n  }\n\n  return rescheduleLogs;\n}\n\nconst rescheduleLogs = detectChangeProgram(oldPrograms, newPrograms, channel, dateStr);\n\nconsole.log(`Generated ${rescheduleLogs.length} reschedule log entries`);\n\nif (rescheduleLogs.length === 0) {\n  return [];\n}\n\nreturn rescheduleLogs.map(log => ({ json: log }));"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -2016,
+        -144
+      ],
+      "id": "ed2a7fa1-b9d7-4221-8cd0-96bcddcc7b53",
+      "name": "Detect Changes"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "=DELETE FROM program \nWHERE channel_id = 'THVL1' \n  AND begin_time LIKE '{{ $('Extract Program Details').first().json.target_date }}%';",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.mySql",
+      "typeVersion": 2.5,
+      "position": [
+        -2240,
+        48
+      ],
+      "id": "da24f976-77bf-44c2-a8da-8d5a11baa1c6",
+      "name": "Delete Old Programs",
+      "alwaysOutputData": true,
+      "credentials": {
+        "mySql": {
+          "id": "WeXmgYhxDmImsqwd",
+          "name": "THVL1"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "table": {
+          "__rl": true,
+          "value": "program",
+          "mode": "list",
+          "cachedResultName": "program"
+        },
+        "dataMode": "defineBelow",
+        "valuesToSend": {
+          "values": [
+            {
+              "column": "channel_id",
+              "value": "={{ $json.channel_id }}"
+            },
+            {
+              "column": "begin_time",
+              "value": "={{ $json.begin_time }}"
+            },
+            {
+              "column": "end_time",
+              "value": "={{ $json.end_time }}"
+            },
+            {
+              "column": "name",
+              "value": "={{ $json.name }}"
+            },
+            {
+              "column": "content",
+              "value": "={{ $json.content }}"
+            },
+            {
+              "column": "create_time",
+              "value": "={{ $json.create_time }}"
+            },
+            {
+              "column": "update_time",
+              "value": "={{ $json.update_time }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.mySql",
+      "typeVersion": 2.5,
+      "position": [
+        -1792,
+        224
+      ],
+      "id": "d350d760-0a63-406f-ba36-04a3e6917d1c",
+      "name": "Insert Programs",
+      "credentials": {
+        "mySql": {
+          "id": "WeXmgYhxDmImsqwd",
+          "name": "THVL1"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "table": {
+          "__rl": true,
+          "value": "reschedule_log",
+          "mode": "list",
+          "cachedResultName": "reschedule_log"
+        },
+        "dataMode": "defineBelow",
+        "valuesToSend": {
+          "values": [
+            {
+              "column": "channel_id",
+              "value": "={{ $json.channel_id }}"
+            },
+            {
+              "column": "begin_time",
+              "value": "={{ $json.begin_time }}"
+            },
+            {
+              "column": "end_time",
+              "value": "={{ $json.end_time }}"
+            },
+            {
+              "column": "name",
+              "value": "={{ $json.name }}"
+            },
+            {
+              "column": "content",
+              "value": "={{ $json.content }}"
+            },
+            {
+              "column": "original_begin_time",
+              "value": "={{ $json.original_begin_time }}"
+            },
+            {
+              "column": "original_end_time",
+              "value": "={{ $json.original_end_time }}"
+            },
+            {
+              "column": "original_name",
+              "value": "={{ $json.original_name }}"
+            },
+            {
+              "column": "original_content",
+              "value": "={{ $json.original_content }}"
+            },
+            {
+              "column": "status",
+              "value": "={{ $json.status }}"
+            },
+            {
+              "column": "create_time",
+              "value": "={{ $json.create_time }}"
+            },
+            {
+              "column": "update_time",
+              "value": "={{ $json.update_time }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.mySql",
+      "typeVersion": 2.5,
+      "position": [
+        -1792,
+        32
+      ],
+      "id": "a6436a44-186f-40a5-8971-597484644714",
+      "name": "Insert Reschedule Logs",
+      "credentials": {
+        "mySql": {
+          "id": "WeXmgYhxDmImsqwd",
+          "name": "THVL1"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const programs = $('Extract Program Details').all();\nreturn programs;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -2016,
+        48
+      ],
+      "id": "dff2add5-9ca7-41e6-9526-2e463733ea57",
+      "name": "Pass Programs"
+    },
+    {
+      "parameters": {
+        "jsCode": "// This node handles the case when no schedule data is found\nconst input = $input.first().json;\n\nconsole.log(`No schedule data found for date: ${input.date}`);\nconsole.log(`Day offset: ${input.dayOffset}`);\n\n// Return the data to continue to the next day\nreturn [{ json: {\n  date: input.date,\n  dateStr: input.dateStr,\n  dayOffset: input.dayOffset,\n  hasData: false,\n  skipProcessing: true\n} }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -2912,
+        -48
+      ],
+      "id": "3ed6180e-e521-4722-91b6-e764f79caa13",
+      "name": "No Data Handler"
+    },
+    {
+      "parameters": {
+        "jsCode": "// This node checks if we should continue to the next day or stop\nconst input = $input.first().json;\nconst batchData = $('Split In Batches').item.json;\n\nconsole.log(`Checking if we should continue for date: ${input.date}`);\nconsole.log(`Has data: ${input.hasData}`);\nconsole.log(`Day offset: ${input.dayOffset}`);\n\n// If we found data, we can stop here\nif (input.hasData) {\n  console.log(`Found data for ${input.date}, stopping the loop`);\n  return [{ json: {\n    continueLoop: false,\n    foundData: true,\n    date: input.date,\n    dayOffset: input.dayOffset\n  } }];\n}\n\n// If no data and we haven't reached the maximum days, continue\nconst maxDays = 7; // This should match the maxDaysToCheck in Generate Date Range\nif (input.dayOffset < maxDays - 1) {\n  console.log(`No data for ${input.date}, continuing to next day`);\n  return [{ json: {\n    continueLoop: true,\n    foundData: false,\n    date: input.date,\n    dayOffset: input.dayOffset\n  } }];\n}\n\n// If we've reached the maximum days without finding data, stop\nconsole.log(`Reached maximum days (${maxDays}) without finding data`);\nreturn [{ json: {\n  continueLoop: false,\n  foundData: false,\n  date: input.date,\n  dayOffset: input.dayOffset\n} }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -2688,
+        48
+      ],
+      "id": "continue-check-node",
+      "name": "Check Continue Loop"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "id": "continue-condition",
+              "leftValue": "={{ $json.continueLoop }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equal",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        -2464,
+        48
+      ],
+      "id": "continue-if-node",
+      "name": "Continue Loop?"
+    }
+  ],
+  "connections": {
+    "When clicking 'Execute workflow'": {
+      "main": [
+        [
+          {
+            "node": "Insert Channel",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Insert Channel",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Insert Channel": {
+      "main": [
+        [
+          {
+            "node": "Generate Date Range",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate Date Range": {
+      "main": [
+        [
+          {
+            "node": "Split In Batches",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split In Batches": {
+      "main": [
+        [],
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Check Schedule Exists",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Schedule Exists": {
+      "main": [
+        [
+          {
+            "node": "Has Schedule Data?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Has Schedule Data?": {
+      "main": [
+        [
+          {
+            "node": "No Data Handler",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Extract Schedule Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Schedule Data": {
+      "main": [
+        [
+          {
+            "node": "Extract Program Details",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Program Details": {
+      "main": [
+        [
+          {
+            "node": "Delete Old Programs",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Get Old Programs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Old Programs": {
+      "main": [
+        [
+          {
+            "node": "Detect Changes",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Detect Changes": {
+      "main": [
+        [
+          {
+            "node": "Insert Reschedule Logs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Delete Old Programs": {
+      "main": [
+        [
+          {
+            "node": "Pass Programs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pass Programs": {
+      "main": [
+        [
+          {
+            "node": "Insert Programs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Insert Programs": {
+      "main": [
+        [
+          {
+            "node": "Split In Batches",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Insert Reschedule Logs": {
+      "main": [
+        [
+          {
+            "node": "Split In Batches",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "No Data Handler": {
+      "main": [
+        [
+          {
+            "node": "Check Continue Loop",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Continue Loop": {
+      "main": [
+        [
+          {
+            "node": "Continue Loop?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Continue Loop?": {
+      "main": [
+        [
+          {
+            "node": "Split In Batches",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    }
+  },
+  "pinData": {},
+  "meta": {
+    "instanceId": "cd01893989d677b1541ddeb546a5f2ea4ecbb3c3d1080b3a014d7811f8edd7af"
+  }
+}
