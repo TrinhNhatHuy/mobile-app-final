@@ -74,7 +74,6 @@ public class ArtworkRepository {
         });
     }
 
-    /** --- 2. Lấy ngẫu nhiên 10 ảnh bất kỳ --- */
     public void getPopularArtworks(ArtworkCallback callback) {
         db.collection("artworks")
                 .get()
@@ -87,7 +86,6 @@ public class ArtworkRepository {
                 .addOnFailureListener(e -> callback.onError(e.getMessage()));
     }
 
-    /** --- 3. Lấy daily artworks (1 ảnh thay đổi sau mỗi 24h) --- */
     public void getDailyArtworks(ArtworkCallback callback) {
         db.collection("artworks")
                 .get()
