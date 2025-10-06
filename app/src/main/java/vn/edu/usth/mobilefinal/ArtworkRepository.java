@@ -138,7 +138,7 @@ public class ArtworkRepository {
     }
 
     public void searchArtworks(String query, ArtworkCallback callback) {
-        Call<ArtworksResponse> call = apiService.searchArtworks(query, "id,title,artist_display,date_display,image_id", 20);
+        Call<ArtworksResponse> call = apiService.searchArtworks(query, "id,title,artist_display,date_display,image_id, artwork_type_title", 20);
 
         call.enqueue(new Callback<ArtworksResponse>() {
             @Override
