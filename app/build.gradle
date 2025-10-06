@@ -38,6 +38,7 @@ dependencies {
     implementation platform('com.google.firebase:firebase-bom:33.5.1')
     implementation libs.firebase.auth
     implementation 'com.google.firebase:firebase-firestore'
+    implementation libs.volley
     testImplementation libs.junit
     androidTestImplementation libs.ext.junit
     androidTestImplementation libs.espresso.core

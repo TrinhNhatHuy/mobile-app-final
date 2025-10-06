@@ -34,7 +34,7 @@ public class PopularArtworksFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_popular_artworks, container, false);
         recyclerPopular = view.findViewById(R.id.recyclerPopular);
 
-        artworkRepository = new ArtworkRepository();
+        artworkRepository = new ArtworkRepository(getContext());
         setupRecyclerView();
         loadPopularArtworks();
 

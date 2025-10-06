@@ -92,6 +92,6 @@ public class HomeActivity extends AppCompatActivity {
     }
 }
 
-// thêm lại fetchapi
-// thêm Artwork of the Day
-// tách home frag thành 3 frag khác nhau ( chiều sẽ bổ sung thêm artworkdaily )
+// thêm lại fetchapi ( xoá db cũ với catagory popular và famous )
+// với 100 ảnh ta sẽ lấy ngẫu nhiên sau 24h cho art work of the day và 10 ảnh random cho popular works )
+// viết frag cho artwork of the day

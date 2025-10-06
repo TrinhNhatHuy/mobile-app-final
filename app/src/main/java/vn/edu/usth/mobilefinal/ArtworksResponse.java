@@ -5,17 +5,24 @@ import java.util.List;
 
 public class ArtworksResponse {
     @SerializedName("data")
-    private List<ArtworkData> data;
+    public List<ArtworkData> data;
 
     @SerializedName("config")
-    private Config config;
+    public Config config;
 
-    public List<ArtworkData> getData() { return data; }
-    public void setData(List<ArtworkData> data) { this.data = data; }
+    public static class ArtworkData {
+        @SerializedName("id") public int id;
+        @SerializedName("title") public String title;
+        @SerializedName("artist_display") public String artistDisplay;
+        @SerializedName("date_display") public String dateDisplay;
+        @SerializedName("image_id") public String imageId;
+    }
 
-    public Config getConfig() { return config; }
-    public void setConfig(Config config) { this.config = config; }
+    public static class Config {
+        @SerializedName("iiif_url") public String iiifUrl;
+    }
 }
+
 
 class ArtworkData {
     @SerializedName("id")
@@ -56,3 +63,13 @@ class Config {
     public String getIiifUrl() { return iiifUrl; }
     public void setIiifUrl(String iiifUrl) { this.iiifUrl = iiifUrl; }
 }
+
+//ArtworksResponse
+//├─ data: List<ArtworkData>
+//│   ├─ ArtworkData (id=1, title="Mona Lisa", ...)
+//│   ├─ ArtworkData (id=2, title="Starry Night", ...)
+//│   └─ ...
+//└─ config: Config
+//    └─ iiifUrl: "https://..."
+
+//@SerializedName biến cái iiif_url ( được trả từ Json ) thành iiifurl ( phù hợp với Java vi java ko hỗ trợ biến có dấu _)
