@@ -57,7 +57,8 @@
                 android:textStyle="bold"
                 android:layout_marginStart="8dp"
                 android:maxLines="1"
-                android:ellipsize="end" />
+                android:ellipsize="end"
+                android:gravity="center_vertical" />
 
         </LinearLayout>
 

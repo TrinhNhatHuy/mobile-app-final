@@ -3,14 +3,12 @@ package vn.edu.usth.mobilefinal.activities;
 import android.content.Intent;
 import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
-import vn.edu.usth.mobilefinal.Artwork;
 import vn.edu.usth.mobilefinal.R;
 import vn.edu.usth.mobilefinal.adapters.ViewPagerAdapter;
 import vn.edu.usth.mobilefinal.fragments.CollectionFragment;

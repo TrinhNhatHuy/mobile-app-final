@@ -13,8 +13,6 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import vn.edu.usth.mobilefinal.R;
-import vn.edu.usth.mobilefinal.fragments.UserInfoFragment;
-import vn.edu.usth.mobilefinal.fragments.PopularArtworksFragment;
 
 public class HomeFragment extends Fragment {
     @Nullable
