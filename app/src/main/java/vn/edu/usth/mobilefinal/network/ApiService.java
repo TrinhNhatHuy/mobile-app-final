@@ -11,4 +11,11 @@ public interface ApiService {
             @Query("limit") int limit,
             @Query("fields") String fields
     );
+
+    @GET("artworks/search")
+    Call<ArtworksResponse> searchArtworks(
+            @Query("q") String query,
+            @Query("fields") String fields,
+            @Query("limit") int limit
+    );
 }

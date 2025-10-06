@@ -136,4 +136,46 @@ public class ArtworkRepository {
                     callback.onError("Error checking database: " + e.getMessage());
                 });
     }
+
+    public void searchArtworks(String query, ArtworkCallback callback) {
+        Call<ArtworksResponse> call = apiService.searchArtworks(query, "id,title,artist_display,date_display,image_id, artwork_type_title", 20);
+
+        call.enqueue(new Callback<ArtworksResponse>() {
+            @Override
+            public void onResponse(Call<ArtworksResponse> call, Response<ArtworksResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    String iiifUrl = response.body().getConfig().getIiifUrl();
+                    List<ArtworkData> artworkDataList = response.body().getData();
+                    List<Artwork> artworks = new ArrayList<>();
+
+                    for (ArtworkData artworkData : artworkDataList) {
+                        String imageUrl = "";
+                        if (artworkData.getImageId() != null && !artworkData.getImageId().isEmpty()) {
+                            imageUrl = iiifUrl + "/" + artworkData.getImageId() + "/full/843,/0/default.jpg";
+                        }
+
+                        Artwork artwork = new Artwork(
+                                "artwork_" + artworkData.getId(),
+                                artworkData.getTitle() != null ? artworkData.getTitle() : "Untitled",
+                                artworkData.getArtistDisplay() != null ? artworkData.getArtistDisplay() : "Unknown Artist",
+                                imageUrl,
+                                artworkData.getDateDisplay() != null ? artworkData.getDateDisplay() : "",
+                                "",
+                                "search" // category đặc biệt cho search
+                        );
+                        artworks.add(artwork);
+                    }
+
+                    callback.onSuccess(artworks);
+                } else {
+                    callback.onError("Search failed: " + response.message());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ArtworksResponse> call, Throwable t) {
+                callback.onError("Search error: " + t.getMessage());
+            }
+        });
+    }
 }

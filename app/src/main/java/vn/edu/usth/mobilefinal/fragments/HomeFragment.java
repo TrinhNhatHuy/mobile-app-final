@@ -80,7 +80,8 @@ public class HomeFragment extends Fragment {
                     if (getActivity() instanceof HomeActivity) {
                         ((HomeActivity) getActivity()).openArtworkDetails(artwork);
                     }
-                }
+                },
+                R.layout.item_artwork_main
         );
 
         recyclerPopular.setAdapter(popularAdapter);
