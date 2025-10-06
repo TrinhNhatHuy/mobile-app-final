@@ -35,6 +35,7 @@
             android:exported="false" /> <!-- Home activity for after login -->
         <activity
             android:name=".activities.HomeActivity"
+            android:windowSoftInputMode="adjustPan"
             android:exported="false" />
     </application>
 
