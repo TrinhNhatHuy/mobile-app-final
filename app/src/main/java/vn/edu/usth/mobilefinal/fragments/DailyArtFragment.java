@@ -6,7 +6,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -26,7 +25,6 @@ import vn.edu.usth.mobilefinal.activities.ArtWork_Details;
 public class DailyArtFragment extends Fragment {
 
     private ImageView ivArtwork;
-    private TextView tvTitle, tvArtist;
     private MaterialButton btnViewDetails;
     private ArtworkRepository repository;
     private Artwork todayArtwork;
@@ -38,10 +36,7 @@ public class DailyArtFragment extends Fragment {
                              @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_daily_art, container, false);
 
-        // Ánh xạ view
         ivArtwork = view.findViewById(R.id.ivArtwork);
-        tvTitle = view.findViewById(R.id.tvArtworkTitle);
-        tvArtist = view.findViewById(R.id.tvArtistName);
         btnViewDetails = view.findViewById(R.id.btnViewDetails);
 
         repository = new ArtworkRepository(requireContext());
@@ -61,11 +56,8 @@ public class DailyArtFragment extends Fragment {
                 }
 
                 todayArtwork = artworks.get(0);
-                tvTitle.setText(todayArtwork.getTitle() != null ? todayArtwork.getTitle() : "Untitled");
-                tvArtist.setText(todayArtwork.getArtist() != null ? todayArtwork.getArtist() : "Unknown Artist");
-
-                // Load ảnh bằng Glide
                 String imageUrl = todayArtwork.getImageUrl();
+
                 if (imageUrl != null && !imageUrl.isEmpty()) {
                     Glide.with(requireContext())
                             .load(imageUrl)
@@ -76,7 +68,6 @@ public class DailyArtFragment extends Fragment {
                     ivArtwork.setImageResource(R.drawable.artwork_placeholder);
                 }
 
-                // Sự kiện click "View Details"
                 btnViewDetails.setOnClickListener(v -> openArtworkDetails());
             }
 
