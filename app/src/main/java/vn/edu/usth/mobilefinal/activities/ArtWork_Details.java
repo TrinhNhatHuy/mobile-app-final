@@ -1,6 +1,9 @@
 package vn.edu.usth.mobilefinal.activities;
 
+import android.media.Image;
 import android.os.Bundle;
+import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -27,15 +30,23 @@ public class ArtWork_Details extends AppCompatActivity {
         TextView artist = findViewById(R.id.tvArtistName);
         TextView year = findViewById(R.id.tvYear);
         TextView description = findViewById(R.id.tvDescription);
+        ImageButton btnBack = findViewById(R.id.btnBack);
+
+        // Lấy dữ liệu từ Intent
         Artwork artwork = (Artwork) getIntent().getSerializableExtra("artwork");
-        title.setText(artwork.getTitle());
-        artist.setText(artwork.getArtist());
-        year.setText(artwork.getDate());
-        description.setText(artwork.getDescription());
-        Glide.with(this)
-                .load(artwork.getImageUrl())
-                .placeholder(R.drawable.artwork_placeholder)
-                .error(R.drawable.artwork_placeholder)
-                .into(ivArtwork);
+
+        if (artwork != null) {
+            title.setText(artwork.getTitle());
+            artist.setText(artwork.getArtist());
+            year.setText(artwork.getDate());
+            description.setText(artwork.getDescription());
+            Glide.with(this)
+                    .load(artwork.getImageUrl())
+                    .placeholder(R.drawable.artwork_placeholder)
+                    .error(R.drawable.artwork_placeholder)
+                    .into(ivArtwork);
+        }
+
+        btnBack.setOnClickListener(v -> finish());
     }
 }
