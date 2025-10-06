@@ -43,12 +43,7 @@ public class HomeActivity extends AppCompatActivity {
         setupBottomNavigation();
     }
 
-    // ✅ Hàm này cho phép HomeFragment mở ArtWork_Details
-    public void openArtworkDetails(Artwork artwork) {
-        Intent intent = new Intent(this, ArtWork_Details.class);
-        intent.putExtra("artwork", artwork);
-        startActivity(intent);
-    }
+
 
     private void setupViewPager() {
         viewPager = findViewById(R.id.viewPager);
@@ -101,4 +96,4 @@ public class HomeActivity extends AppCompatActivity {
 
 // thêm lại fetchapi
 // thêm Artwork of the Day
-// sửa nut back ở popular artwork ( DONE)
+// tách home frag thành 3 frag khác nhau ( chiều sẽ bổ sung thêm artworkdaily )
