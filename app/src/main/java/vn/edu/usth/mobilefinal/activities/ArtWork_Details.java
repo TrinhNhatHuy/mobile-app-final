@@ -1,6 +1,8 @@
 package vn.edu.usth.mobilefinal.activities;
 
 import android.os.Bundle;
+import android.view.View;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -27,6 +29,7 @@ public class ArtWork_Details extends AppCompatActivity {
         TextView artist = findViewById(R.id.tvArtistName);
         TextView year = findViewById(R.id.tvYear);
         TextView description = findViewById(R.id.tvDescription);
+        ImageButton back = findViewById(R.id.btnBack);
         Artwork artwork = (Artwork) getIntent().getSerializableExtra("artwork");
         title.setText(artwork.getTitle());
         artist.setText(artwork.getArtist());
@@ -37,5 +40,11 @@ public class ArtWork_Details extends AppCompatActivity {
                 .placeholder(R.drawable.artwork_placeholder)
                 .error(R.drawable.artwork_placeholder)
                 .into(ivArtwork);
+        back.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
     }
 }
