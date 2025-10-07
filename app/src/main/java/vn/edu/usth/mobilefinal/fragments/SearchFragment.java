@@ -7,6 +7,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
@@ -26,12 +28,16 @@ public class SearchFragment extends Fragment {
 
     private ArtworkAdapter artworkAdapter;
     private ArtworkRepository artworkRepository;
+    private ProgressBar progressBar;
+    private LinearLayout emptyState;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_search, container, false);
 
         EditText searchInput = view.findViewById(R.id.etSearch);
+        progressBar = view.findViewById(R.id.progressBar);
+        emptyState = view.findViewById(R.id.emptyState);
         RecyclerView recyclerView = view.findViewById(R.id.recyclerSearchResults);
 
         // setup RecyclerView
@@ -47,6 +53,7 @@ public class SearchFragment extends Fragment {
         artworkRepository = new ArtworkRepository();
 
         searchInput.setOnEditorActionListener((v, actionId, event) -> {
+            progressBar.setVisibility(View.VISIBLE);
             InputMethodManager imm = (InputMethodManager) requireContext().getSystemService(Context.INPUT_METHOD_SERVICE);
             imm.hideSoftInputFromWindow(searchInput.getWindowToken(), 0);
 
@@ -64,17 +71,22 @@ public class SearchFragment extends Fragment {
     }
 
     private void performSearch(String query) {
+        artworkAdapter.setArtworkList(new ArrayList<>());
+        emptyState.setVisibility(View.GONE);
+
         artworkRepository.searchArtworks(query, new ArtworkRepository.ArtworkCallback() {
             @Override
             public void onSuccess(List<Artwork> artworks) {
+                progressBar.setVisibility(View.GONE);
                 if (artworks.isEmpty()) {
-                    Toast.makeText(getContext(), "Không tìm thấy kết quả", Toast.LENGTH_SHORT).show();
+                    emptyState.setVisibility(View.VISIBLE);
                 }
                 artworkAdapter.setArtworkList(artworks); // update UI
             }
 
             @Override
             public void onError(String error) {
+                progressBar.setVisibility(View.GONE);
                 Toast.makeText(getContext(), "Lỗi search: " + error, Toast.LENGTH_SHORT).show();
             }
         });
