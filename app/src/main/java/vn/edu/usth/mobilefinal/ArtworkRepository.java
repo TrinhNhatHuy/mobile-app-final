@@ -128,4 +128,56 @@ public class ArtworkRepository {
                 })
                 .addOnFailureListener(e -> callback.onError(e.getMessage()));
     }
+
+    public void searchArtworks(String query, ArtworkCallback callback) {
+        // Encode query để tránh lỗi URL khi có dấu cách
+        String encodedQuery = query.replace(" ", "%20");
+        String url = "https://api.artic.edu/api/v1/artworks/search?q=" + encodedQuery +
+                "&fields=id,title,artist_display,date_display,image_id,artwork_type_title&limit=20";
+
+        NetworkHelper.getInstance(context).getArtworks(url, new NetworkHelper.VolleyCallback() {
+            @Override
+            public void onSuccess(String result) {
+                try {
+                    ArtworksResponse response = gson.fromJson(result, ArtworksResponse.class);
+                    if (response == null || response.data == null) {
+                        callback.onError("Empty response");
+                        return;
+                    }
+
+                    String iiifUrl = response.config.iiifUrl;
+                    List<Artwork> artworks = new ArrayList<>();
+
+                    for (ArtworksResponse.ArtworkData ad : response.data) {
+                        String imageUrl = (ad.imageId != null && !ad.imageId.isEmpty())
+                                ? iiifUrl + "/" + ad.imageId + "/full/843,/0/default.jpg"
+                                : "";
+
+                        Artwork artwork = new Artwork(
+                                "artwork_" + ad.id,
+                                ad.title != null ? ad.title : "Untitled",
+                                ad.artistDisplay != null ? ad.artistDisplay : "Unknown Artist",
+                                imageUrl,
+                                ad.dateDisplay != null ? ad.dateDisplay : "",
+                                "",
+                                "search" // category đặc biệt cho search
+                        );
+                        artworks.add(artwork);
+                    }
+                    callback.onSuccess(artworks);
+
+                } catch (Exception e) {
+                    callback.onError("Parse error: " + e.getMessage());
+                }
+            }
+
+            @Override
+            public void onError(String error) {
+                callback.onError("Network error: " + error);
+            }
+        });
+    }
+
+
+
 }

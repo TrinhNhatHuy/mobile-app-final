@@ -16,6 +16,7 @@ public class ArtworksResponse {
         @SerializedName("artist_display") public String artistDisplay;
         @SerializedName("date_display") public String dateDisplay;
         @SerializedName("image_id") public String imageId;
+        @SerializedName("artwork_type_title") public String category;
     }
 
     public static class Config {
@@ -40,6 +41,9 @@ class ArtworkData {
     @SerializedName("image_id")
     private String imageId;
 
+    @SerializedName("artwork_type_title")
+    private String category;
+
     public int getId() { return id; }
     public void setId(int id) { this.id = id; }
 
@@ -54,6 +58,8 @@ class ArtworkData {
 
     public String getImageId() { return imageId; }
     public void setImageId(String imageId) { this.imageId = imageId; }
+    public String getCategory() { return category; }
+    public void setCategory(String category) { this.category = category; }
 }
 
 class Config {
