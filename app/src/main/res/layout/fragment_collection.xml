@@ -29,6 +29,8 @@
     </LinearLayout>
 
     <!-- Category Filter Chips -->
+
+    <!-- Artworks Grid Section -->
     <com.google.android.material.chip.ChipGroup
         android:id="@+id/chipGroupCategories"
         android:layout_width="match_parent"
@@ -37,52 +39,51 @@
         app:singleSelection="true">
 
         <com.google.android.material.chip.Chip
-            android:id="@+id/chipAllCategories"
+            android:id="@+id/chipBooks"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="All"
+            android:text="Books"
             android:textColor="#5D4037"
-            app:chipBackgroundColor="@drawable/chip_canvas_selector"
             app:checkedIcon="@null"
-            app:chipCornerRadius="16dp"
-            app:checkedIconEnabled="false" />
+            app:checkedIconEnabled="false"
+            app:chipBackgroundColor="@drawable/chip_canvas_selector"
+            app:chipCornerRadius="16dp" />
 
         <com.google.android.material.chip.Chip
-            android:id="@+id/chipRenaissance"
+            android:id="@+id/chipPainting"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Renaissance"
+            android:text="Painting"
             android:textColor="#5D4037"
-            app:chipBackgroundColor="@drawable/chip_canvas_selector"
             app:checkedIcon="@null"
-            app:chipCornerRadius="16dp"
-            app:checkedIconEnabled="false" />
+            app:checkedIconEnabled="false"
+            app:chipBackgroundColor="@drawable/chip_canvas_selector"
+            app:chipCornerRadius="16dp" />
 
         <com.google.android.material.chip.Chip
-            android:id="@+id/chipImpressionism"
+            android:id="@+id/chipVessel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Impressionism"
+            android:text="Vessel"
             android:textColor="#5D4037"
-            app:chipBackgroundColor="@drawable/chip_canvas_selector"
             app:checkedIcon="@null"
-            app:chipCornerRadius="16dp"
-            app:checkedIconEnabled="false" />
+            app:checkedIconEnabled="false"
+            app:chipBackgroundColor="@drawable/chip_canvas_selector"
+            app:chipCornerRadius="16dp" />
 
         <com.google.android.material.chip.Chip
-            android:id="@+id/chipModern"
+            android:id="@+id/chipPrint"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Modern"
+            android:text="Print"
             android:textColor="#5D4037"
-            app:chipBackgroundColor="@drawable/chip_canvas_selector"
             app:checkedIcon="@null"
-            app:chipCornerRadius="16dp"
-            app:checkedIconEnabled="false" />
+            app:checkedIconEnabled="false"
+            app:chipBackgroundColor="@drawable/chip_canvas_selector"
+            app:chipCornerRadius="16dp" />
 
     </com.google.android.material.chip.ChipGroup>
 
-    <!-- Artworks Grid Section -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -104,9 +105,17 @@
             android:fontFamily="serif"
             android:layout_marginBottom="16dp" />
 
+        <ProgressBar
+            android:id="@+id/progressBar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:visibility="gone"
+            android:indeterminateTint="#7E57C2" />
+
         <!-- Artworks Grid -->
         <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/rvArtworks"
+            android:id="@+id/recyclerViewExplore"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:clipToPadding="false" />
@@ -148,15 +157,6 @@
                 android:gravity="center" />
 
         </LinearLayout>
-
-        <!-- Loading State -->
-        <ProgressBar
-            android:id="@+id/progressBar"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:visibility="gone"
-            android:indeterminateTint="#7E57C2" />
 
     </LinearLayout>
 

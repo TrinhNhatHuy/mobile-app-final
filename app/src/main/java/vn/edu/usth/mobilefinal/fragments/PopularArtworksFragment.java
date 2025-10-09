@@ -48,7 +48,7 @@ public class PopularArtworksFragment extends Fragment {
                 false
         ));
 
-        popularAdapter = new ArtworkAdapter(new ArrayList<>(), this::openArtworkDetails);
+        popularAdapter = new ArtworkAdapter(new ArrayList<>(), this::openArtworkDetails, R.layout.item_artwork_main);
         recyclerPopular.setAdapter(popularAdapter);
 
         recyclerPopular.addOnItemTouchListener(new RecyclerView.OnItemTouchListener() {

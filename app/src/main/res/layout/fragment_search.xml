@@ -63,6 +63,8 @@
                 android:textColor="#5D4037"
                 android:textSize="16sp"
                 android:background="@null"
+                android:imeOptions="actionSearch"
+                android:inputType="text"
                 android:padding="0dp"
                 android:maxLines="1" />
 
@@ -81,62 +83,6 @@
         </LinearLayout>
 
     </com.google.android.material.card.MaterialCardView>
-
-    <!-- Filter Chips -->
-    <com.google.android.material.chip.ChipGroup
-        android:id="@+id/chipGroupFilters"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
-        android:layout_marginEnd="20dp"
-        android:layout_marginBottom="16dp"
-        app:singleSelection="false">
-
-        <com.google.android.material.chip.Chip
-            android:id="@+id/chipAll"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="All"
-            android:textColor="#5D4037"
-            app:chipBackgroundColor="@drawable/chip_canvas_selector"
-            app:checkedIcon="@null"
-            app:chipCornerRadius="16dp"
-            app:checkedIconEnabled="false" />
-
-        <com.google.android.material.chip.Chip
-            android:id="@+id/chipPaintings"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Paintings"
-            android:textColor="#5D4037"
-            app:chipBackgroundColor="@drawable/chip_canvas_selector"
-            app:checkedIcon="@null"
-            app:chipCornerRadius="16dp"
-            app:checkedIconEnabled="false" />
-
-        <com.google.android.material.chip.Chip
-            android:id="@+id/chipSculptures"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Sculptures"
-            android:textColor="#5D4037"
-            app:chipBackgroundColor="@drawable/chip_canvas_selector"
-            app:checkedIcon="@null"
-            app:chipCornerRadius="16dp"
-            app:checkedIconEnabled="false" />
-
-        <com.google.android.material.chip.Chip
-            android:id="@+id/chipModern"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Modern"
-            android:textColor="#5D4037"
-            app:chipBackgroundColor="@drawable/chip_canvas_selector"
-            app:checkedIcon="@null"
-            app:chipCornerRadius="16dp"
-            app:checkedIconEnabled="false" />
-
-    </com.google.android.material.chip.ChipGroup>
 
     <!-- Search Results Section -->
     <LinearLayout
@@ -169,51 +115,6 @@
 
         </LinearLayout>
 
-        <!-- Search Results RecyclerView -->
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recyclerSearchResults"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:clipToPadding="false" />
-
-        <!-- Empty State -->
-        <LinearLayout
-            android:id="@+id/emptyState"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical"
-            android:gravity="center"
-            android:visibility="gone"
-            android:padding="40dp">
-
-            <ImageView
-                android:layout_width="120dp"
-                android:layout_height="120dp"
-                android:alpha="0.5"
-                android:layout_marginBottom="24dp"
-                app:tint="#8D6E63" />
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="No artworks found"
-                android:textColor="#5D4037"
-                android:textSize="18sp"
-                android:textStyle="bold"
-                android:gravity="center"
-                android:layout_marginBottom="8dp"
-                android:fontFamily="serif" />
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Try different keywords or filters"
-                android:textColor="#8D6E63"
-                android:textSize="14sp"
-                android:gravity="center" />
-
-        </LinearLayout>
-
         <!-- Loading State -->
         <ProgressBar
             android:id="@+id/progressBar"
@@ -222,6 +123,57 @@
             android:layout_gravity="center"
             android:visibility="gone"
             android:indeterminateTint="#7E57C2" />
+        
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <!-- Search Results RecyclerView -->
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recyclerSearchResults"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:clipToPadding="false" />
+
+            <!-- Empty State -->
+            <LinearLayout
+                android:id="@+id/emptyState"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:visibility="gone"
+                android:gravity="center"
+                android:padding="40dp">
+
+                <ImageView
+                    android:layout_width="120dp"
+                    android:layout_height="120dp"
+                    android:alpha="0.5"
+                    android:layout_marginBottom="24dp"
+                    android:background="@drawable/artwork_placeholder"
+                    app:tint="#8D6E63" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="No artworks found"
+                    android:textColor="#5D4037"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:gravity="center"
+                    android:layout_marginBottom="8dp"
+                    android:fontFamily="serif" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Try different keywords or filters"
+                    android:textColor="#8D6E63"
+                    android:textSize="14sp"
+                    android:gravity="center" />
+
+            </LinearLayout>
+        </FrameLayout>
 
     </LinearLayout>
 

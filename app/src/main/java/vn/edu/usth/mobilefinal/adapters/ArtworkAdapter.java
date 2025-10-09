@@ -16,21 +16,23 @@ import vn.edu.usth.mobilefinal.R;
 public class ArtworkAdapter extends RecyclerView.Adapter<ArtworkAdapter.ArtworkViewHolder> {
     private List<Artwork> artworks; // This is the field name used everywhere
     private OnItemClickListener onItemClickListener;
+    private int itemLayout;
 
     public interface OnItemClickListener {
         void onItemClick(Artwork artwork);
     }
 
-    public ArtworkAdapter(List<Artwork> artworks, OnItemClickListener onItemClickListener) {
+    public ArtworkAdapter(List<Artwork> artworks, OnItemClickListener onItemClickListener, int itemLayout) {
         this.artworks = artworks;
         this.onItemClickListener = onItemClickListener;
+        this.itemLayout = itemLayout;
     }
 
     @NonNull
     @Override
     public ArtworkViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.item_artwork_main, parent, false);
+                .inflate(itemLayout, parent, false);
         return new ArtworkViewHolder(view);
     }
 
