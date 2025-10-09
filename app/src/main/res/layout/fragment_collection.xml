@@ -29,6 +29,8 @@
     </LinearLayout>
 
     <!-- Category Filter Chips -->
+
+    <!-- Artworks Grid Section -->
     <com.google.android.material.chip.ChipGroup
         android:id="@+id/chipGroupCategories"
         android:layout_width="match_parent"
@@ -42,10 +44,10 @@
             android:layout_height="wrap_content"
             android:text="Books"
             android:textColor="#5D4037"
-            app:chipBackgroundColor="@drawable/chip_canvas_selector"
             app:checkedIcon="@null"
-            app:chipCornerRadius="16dp"
-            app:checkedIconEnabled="false" />
+            app:checkedIconEnabled="false"
+            app:chipBackgroundColor="@drawable/chip_canvas_selector"
+            app:chipCornerRadius="16dp" />
 
         <com.google.android.material.chip.Chip
             android:id="@+id/chipPainting"
@@ -53,10 +55,10 @@
             android:layout_height="wrap_content"
             android:text="Painting"
             android:textColor="#5D4037"
-            app:chipBackgroundColor="@drawable/chip_canvas_selector"
             app:checkedIcon="@null"
-            app:chipCornerRadius="16dp"
-            app:checkedIconEnabled="false" />
+            app:checkedIconEnabled="false"
+            app:chipBackgroundColor="@drawable/chip_canvas_selector"
+            app:chipCornerRadius="16dp" />
 
         <com.google.android.material.chip.Chip
             android:id="@+id/chipVessel"
@@ -64,10 +66,10 @@
             android:layout_height="wrap_content"
             android:text="Vessel"
             android:textColor="#5D4037"
-            app:chipBackgroundColor="@drawable/chip_canvas_selector"
             app:checkedIcon="@null"
-            app:chipCornerRadius="16dp"
-            app:checkedIconEnabled="false" />
+            app:checkedIconEnabled="false"
+            app:chipBackgroundColor="@drawable/chip_canvas_selector"
+            app:chipCornerRadius="16dp" />
 
         <com.google.android.material.chip.Chip
             android:id="@+id/chipPrint"
@@ -75,14 +77,13 @@
             android:layout_height="wrap_content"
             android:text="Print"
             android:textColor="#5D4037"
-            app:chipBackgroundColor="@drawable/chip_canvas_selector"
             app:checkedIcon="@null"
-            app:chipCornerRadius="16dp"
-            app:checkedIconEnabled="false" />
+            app:checkedIconEnabled="false"
+            app:chipBackgroundColor="@drawable/chip_canvas_selector"
+            app:chipCornerRadius="16dp" />
 
     </com.google.android.material.chip.ChipGroup>
 
-    <!-- Artworks Grid Section -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"

@@ -3,9 +3,11 @@ package vn.edu.usth.mobilefinal.fragments;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -48,17 +50,27 @@ public class SearchFragment extends Fragment {
 
         // When user enter the searchText => perform
         searchInput.setOnEditorActionListener((v, actionId, event) -> {
-            progressBar.setVisibility(View.VISIBLE);
-            InputMethodManager imm = (InputMethodManager) requireContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-            imm.hideSoftInputFromWindow(searchInput.getWindowToken(), 0);
+            // Kiểm tra xem có đúng là người dùng bấm nút OK/Search/Done không
+            if (actionId == EditorInfo.IME_ACTION_SEARCH ||
+                    actionId == EditorInfo.IME_ACTION_DONE ||
+                    (event != null && event.getKeyCode() == KeyEvent.KEYCODE_ENTER)) {
 
-            String query = searchInput.getText().toString().trim();
-            if (!query.isEmpty()) {
-                performSearch(query);
-            } else {
-                Toast.makeText(getContext(), "Nhập từ khóa để tìm kiếm", Toast.LENGTH_SHORT).show();
+                String query = searchInput.getText().toString().trim();
+
+                if (!query.isEmpty()) {
+                    progressBar.setVisibility(View.VISIBLE);
+                    performSearch(query);
+
+                    // Ẩn bàn phím
+                    InputMethodManager imm = (InputMethodManager) requireContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+                    imm.hideSoftInputFromWindow(searchInput.getWindowToken(), 0);
+                } else {
+                    Toast.makeText(getContext(), "Nhập từ khóa để tìm kiếm", Toast.LENGTH_SHORT).show();
+                }
+                return true; // đã xử lý xong sự kiện
             }
-            return true; // trả về true để ẩn bàn phím sau khi nhấn
+
+            return false; // chưa xử lý gì
         });
         recyclerView.setAdapter(artworkAdapter);
 
