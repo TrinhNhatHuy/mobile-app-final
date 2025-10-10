@@ -16,4 +16,8 @@
     <!-- Gradient Colors -->
     <color name="gradient_start">#5D4037</color> <!-- Dark Brown -->
     <color name="gradient_end">#8D6E63</color>   <!-- Light Brown -->
+
+    <!-- Chip color -->
+    <color name="brown_100">#EDE7DC</color>
+    <color name="brown_500">#D7CCC8</color>
 </resources>

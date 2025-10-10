@@ -124,6 +124,60 @@ public class ArtworkRepository {
             }
         });
     }
+
+    public void filterArtworks(String type, int page, ArtworkCallback callback) {
+        String url = "https://api.artic.edu/api/v1/artworks?page=" + page +
+                "&limit=50&fields=id,title,artist_display,date_display,image_id,artwork_type_title";
+        NetworkHelper.getInstance(context).getArtworks(url, new NetworkHelper.VolleyCallback() {
+            @Override
+            public void onSuccess(String result) {
+                try {
+                    ArtworksResponse response = gson.fromJson(result, ArtworksResponse.class);
+                    if (response == null || response.data == null) {
+                        callback.onError("Empty response");
+                        return;
+                    }
+
+                    String iiifUrl = response.config.iiifUrl;
+                    List<Artwork> artworks = new ArrayList<>();
+
+                    for (ArtworksResponse.ArtworkData ad : response.data) {
+                        // Lọc theo category
+                        if (ad.category == null || !ad.category.equalsIgnoreCase(type)) {
+                            continue; // bỏ qua nếu k khớp loại
+                        }
+
+                        // Tạo image URL
+                        String imageUrl = (ad.imageId != null && !ad.imageId.isEmpty())
+                                ? iiifUrl + "/" + ad.imageId + "/full/full/0/default.jpg"
+                                : "";
+
+                        // Tạo đối tượng Artwork
+                        Artwork artwork = new Artwork(
+                                "artwork_" + ad.id,
+                                ad.title != null ? ad.title : "Untitled",
+                                ad.artistDisplay != null ? ad.artistDisplay : "Unknown Artist",
+                                imageUrl,
+                                ad.dateDisplay != null ? ad.dateDisplay : "",
+                                "",
+                                ad.category != null ? ad.category : ""
+                        );
+
+                        artworks.add(artwork);
+                    }
+                    callback.onSuccess(artworks);
+
+                } catch (Exception e) {
+                    callback.onError("Parse error: " + e.getMessage());
+                }
+            }
+
+            @Override
+            public void onError(String error) {
+                callback.onError("Network error: " + error);
+            }
+        });
+    }
     private List<Artwork> mapResponseToArtworks(ArtworksResponse response) {
         return mapResponseToArtworks(response, "");
     }
