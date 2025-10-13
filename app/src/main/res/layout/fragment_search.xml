@@ -98,10 +98,10 @@
         app:singleSelection="true">
 
         <com.google.android.material.chip.Chip
-            android:id="@+id/chipPhotograph"
+            android:id="@+id/chipAll"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Photograph"
+            android:text="All"
             android:textColor="#5D4037"
             android:textSize="14sp"
             app:checkedIcon="@null"
@@ -110,42 +110,19 @@
             app:chipCornerRadius="16dp" />
 
         <com.google.android.material.chip.Chip
-            android:id="@+id/chipPainting"
+            android:id="@+id/chipFilterBy"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Painting"
+            android:text="Filter By"
             android:textColor="#5D4037"
             android:textSize="14sp"
             app:checkedIcon="@null"
             app:checkedIconEnabled="false"
             app:chipBackgroundColor="@drawable/chip_canvas_selector"
             app:chipCornerRadius="16dp" />
-
-        <com.google.android.material.chip.Chip
-            android:id="@+id/chipVessel"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Vessel"
-            android:textColor="#5D4037"
-            android:textSize="14sp"
-            app:checkedIcon="@null"
-            app:checkedIconEnabled="false"
-            app:chipBackgroundColor="@drawable/chip_canvas_selector"
-            app:chipCornerRadius="16dp" />
-
-        <com.google.android.material.chip.Chip
-            android:id="@+id/chipPrint"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Print"
-            android:textColor="#5D4037"
-            android:textSize="14sp"
-            app:checkedIcon="@null"
-            app:checkedIconEnabled="false"
-            app:chipBackgroundColor="@drawable/chip_canvas_selector"
-            app:chipCornerRadius="16dp" />
-
     </com.google.android.material.chip.ChipGroup>
+
+
 
     <!-- Search Results Section -->
     <LinearLayout

@@ -18,9 +18,11 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.chip.Chip;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import vn.edu.usth.mobilefinal.Artwork;
@@ -29,13 +31,14 @@ import vn.edu.usth.mobilefinal.R;
 import vn.edu.usth.mobilefinal.activities.ArtWork_Details;
 import vn.edu.usth.mobilefinal.activities.HomeActivity;
 import vn.edu.usth.mobilefinal.adapters.ArtworkAdapter;
+import vn.edu.usth.mobilefinal.adapters.CategoryAdapter;
 
 public class SearchFragment extends Fragment {
     private ArtworkAdapter artworkAdapter;
     private ArtworkRepository artworkRepository;
     private ProgressBar progressBar;
     private LinearLayout emptyState;
-    private Chip chipPhotograph, chipPainting, chipVessel, chipPrint;
+    private Chip chipAll, chipFilterBy;
     private List<Artwork> allArtworks = new ArrayList<>();
 
     @Override
@@ -45,10 +48,8 @@ public class SearchFragment extends Fragment {
         EditText searchInput = view.findViewById(R.id.etSearch);
         progressBar = view.findViewById(R.id.progressBar);
         emptyState = view.findViewById(R.id.emptyState);
-        chipPhotograph = view.findViewById(R.id.chipPhotograph);
-        chipPainting = view.findViewById(R.id.chipPainting);
-        chipVessel = view.findViewById(R.id.chipVessel);
-        chipPrint = view.findViewById(R.id.chipPrint);
+        chipAll = view.findViewById(R.id.chipAll);
+        chipFilterBy = view.findViewById(R.id.chipFilterBy);
         RecyclerView recyclerView = view.findViewById(R.id.recyclerSearchResults);
 
         // setup RecyclerView
@@ -82,18 +83,47 @@ public class SearchFragment extends Fragment {
         });
         recyclerView.setAdapter(artworkAdapter);
 
-        // Gắn chip click
-        chipPhotograph.setOnClickListener(v -> filterArtwork("Photograph", allArtworks));
-        chipPainting.setOnClickListener(v -> filterArtwork("Painting", allArtworks));
-        chipPrint.setOnClickListener(v -> filterArtwork("Print", allArtworks));
-        chipVessel.setOnClickListener(v -> filterArtwork("Vessel", allArtworks));
+
+        chipAll.setOnClickListener(v -> highlightSelectedChip("All"));
+        chipFilterBy.setOnClickListener(v -> highlightSelectedChip("Filter"));
+        // Handle when enter FilterBy
+        chipFilterBy.setOnClickListener(v -> {
+            // Create BottomSheetDialog
+            BottomSheetDialog dialog = new BottomSheetDialog(requireContext());
+            View sheetView = getLayoutInflater().inflate(R.layout.select_category, null);
+            dialog.setContentView(sheetView);
+
+            // Map RecyclerView
+            RecyclerView rvCategories = sheetView.findViewById(R.id.rvCategories);
+            rvCategories.setLayoutManager(new LinearLayoutManager(getContext()));
+
+            // Create categories list
+            List<String> cities = Arrays.asList(
+                    "Photograph", "Film, Video, New Media", "Glass", "Coin", "Architectural Drawing",
+                    "Decorative Arts", "Miniature room", "Installation", "Arms",
+                    "Mask", "Drawing and Watercolor", "Ceramics",
+                    "Textile", "Armor", "Vessel", "Sculpture", "Painting", "Book",
+                    "Print", "Furniture"
+            );
+
+            // Set up adapter
+            CategoryAdapter adapter = new CategoryAdapter(cities, category -> {
+                chipFilterBy.setText(category);
+                filterArtwork(category, allArtworks);
+                dialog.dismiss();
+            });
+
+            rvCategories.setAdapter(adapter);
+
+            // Show popup
+            dialog.show();
+        });
 
         return view;
     }
 
     private void filterArtwork(String type, List<Artwork> allArtworks) {
         artworkAdapter.setArtworkList(new ArrayList<>());
-        highlightSelectedChip(type);
 
         // Dùng list mới, không đụng list gốc
         List<Artwork> filteredList = new ArrayList<>();
@@ -132,24 +162,16 @@ public class SearchFragment extends Fragment {
     private void highlightSelectedChip(String type) {
 
         // Reset màu tất cả chip
-        chipPhotograph.setChipBackgroundColorResource(R.color.brown_100);
-        chipPainting.setChipBackgroundColorResource(R.color.brown_100);
-        chipPrint.setChipBackgroundColorResource(R.color.brown_100);
-        chipVessel.setChipBackgroundColorResource(R.color.brown_100);
+        chipAll.setChipBackgroundColorResource(R.color.brown_100);
+        chipFilterBy.setChipBackgroundColorResource(R.color.brown_100);
 
         // Đặt màu cho chip hiện tại
         switch (type) {
-            case "Photograph":
-                chipPhotograph.setChipBackgroundColorResource(R.color.brown_500);
+            case "All":
+                chipAll.setChipBackgroundColorResource(R.color.brown_500);
                 break;
-            case "Painting":
-                chipPainting.setChipBackgroundColorResource(R.color.brown_500);
-                break;
-            case "Print":
-                chipPrint.setChipBackgroundColorResource(R.color.brown_500);
-                break;
-            case "Vessel":
-                chipVessel.setChipBackgroundColorResource(R.color.brown_500);
+            case "Filter By":
+                chipFilterBy.setChipBackgroundColorResource(R.color.brown_500);
                 break;
         }
     }
