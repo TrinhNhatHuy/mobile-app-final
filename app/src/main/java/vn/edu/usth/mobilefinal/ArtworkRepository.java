@@ -142,7 +142,7 @@ public class ArtworkRepository {
 
         for (ArtworksResponse.ArtworkData ad : response.data) {
             String imageUrl = (ad.imageId != null && !ad.imageId.isEmpty())
-                    ? iiifUrl + "/" + ad.imageId + "/full/843,/0/default.jpg"
+                    ? iiifUrl + "/" + ad.imageId + "/full/max/0/default.jpg"
                     : "";
 
             artworks.add(new Artwork(
