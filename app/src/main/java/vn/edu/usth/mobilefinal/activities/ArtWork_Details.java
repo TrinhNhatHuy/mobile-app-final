@@ -1,6 +1,8 @@
 package vn.edu.usth.mobilefinal.activities;
 
+import android.media.Image;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -13,7 +15,6 @@ import vn.edu.usth.mobilefinal.Artwork;
 import vn.edu.usth.mobilefinal.R;
 
 public class ArtWork_Details extends AppCompatActivity {
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -25,7 +26,7 @@ public class ArtWork_Details extends AppCompatActivity {
         TextView year = findViewById(R.id.tvYear);
         TextView description = findViewById(R.id.tvDescription);
         ImageButton btnBack = findViewById(R.id.btnBack);
-
+        ImageButton favourite_heart = findViewById(R.id.btnFavorite);
         // Lấy dữ liệu từ Intent
         Artwork artwork = (Artwork) getIntent().getSerializableExtra("artwork");
 
@@ -42,5 +43,21 @@ public class ArtWork_Details extends AppCompatActivity {
         }
 
         btnBack.setOnClickListener(v -> finish());
+        favourite_heart.setOnClickListener(new View.OnClickListener() {
+            private boolean isFavourite = false;
+            @Override
+            public void onClick(View v) {
+                if(isFavourite){
+                    isFavourite = false;
+                    favourite_heart.setImageResource(R.drawable.ic_favorite_border);
+                }else{
+                    isFavourite = true;
+                    favourite_heart.setImageResource(R.drawable.ic_favorite_filled);
+                }
+            }
+        });
     }
+    // update UI when click icon heart
+    //flow in here : when user click the icon heart -> change image to heart filled inside
+
 }
