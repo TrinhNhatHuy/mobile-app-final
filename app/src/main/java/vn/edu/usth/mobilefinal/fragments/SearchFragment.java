@@ -3,6 +3,7 @@ package vn.edu.usth.mobilefinal.fragments;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,7 +19,11 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.bottomsheet.BottomSheetDialog;
+import com.google.android.material.chip.Chip;
+
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import vn.edu.usth.mobilefinal.Artwork;
@@ -27,12 +32,15 @@ import vn.edu.usth.mobilefinal.R;
 import vn.edu.usth.mobilefinal.activities.ArtWork_Details;
 import vn.edu.usth.mobilefinal.activities.HomeActivity;
 import vn.edu.usth.mobilefinal.adapters.ArtworkAdapter;
+import vn.edu.usth.mobilefinal.adapters.CategoryAdapter;
 
 public class SearchFragment extends Fragment {
     private ArtworkAdapter artworkAdapter;
     private ArtworkRepository artworkRepository;
     private ProgressBar progressBar;
     private LinearLayout emptyState;
+    private Chip chipAll, chipFilterBy;
+    private List<Artwork> allArtworks = new ArrayList<>();
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -41,6 +49,8 @@ public class SearchFragment extends Fragment {
         EditText searchInput = view.findViewById(R.id.etSearch);
         progressBar = view.findViewById(R.id.progressBar);
         emptyState = view.findViewById(R.id.emptyState);
+        chipAll = view.findViewById(R.id.chipAll);
+        chipFilterBy = view.findViewById(R.id.chipFilterBy);
         RecyclerView recyclerView = view.findViewById(R.id.recyclerSearchResults);
 
         // setup RecyclerView
@@ -74,21 +84,77 @@ public class SearchFragment extends Fragment {
         });
         recyclerView.setAdapter(artworkAdapter);
 
+
+        chipAll.setOnClickListener(v -> {
+            highlightSelectedChip("All");
+            artworkAdapter.setArtworkList(allArtworks);
+            emptyState.setVisibility(View.GONE);
+            chipFilterBy.setText("Filter By");
+        });
+        // Handle when enter FilterBy
+        chipFilterBy.setOnClickListener(v -> {
+            highlightSelectedChip("Filter By");
+            // Create BottomSheetDialog
+            BottomSheetDialog dialog = new BottomSheetDialog(requireContext());
+            View sheetView = getLayoutInflater().inflate(R.layout.select_category, null);
+            dialog.setContentView(sheetView);
+
+            // Map RecyclerView
+            RecyclerView rvCategories = sheetView.findViewById(R.id.rvCategories);
+            rvCategories.setLayoutManager(new LinearLayoutManager(getContext()));
+
+            // Create categories list
+            List<String> cities = Arrays.asList(
+                    "Armor", "Book", "Drawing and Watercolor",  "Glass",
+                    "Painting", "Photograph", "Print","Sculpture","Vessel"
+                    );
+
+            // Set up adapter
+            CategoryAdapter adapter = new CategoryAdapter(cities, category -> {
+                chipFilterBy.setText(category);
+                filterArtwork(category, allArtworks);
+                dialog.dismiss();
+            });
+
+            rvCategories.setAdapter(adapter);
+
+            // Show popup
+            dialog.show();
+        });
+
         return view;
     }
 
+    private void filterArtwork(String type, List<Artwork> allArtworks) {
+        emptyState.setVisibility(View.GONE);
+
+        // Dùng list mới, không đụng list gốc
+        List<Artwork> filteredList = new ArrayList<>();
+        for (Artwork artwork : allArtworks) {
+            if (artwork.getCategory() != null && artwork.getCategory().equalsIgnoreCase(type)) {
+                filteredList.add(artwork);
+            }
+        }
+        if (filteredList.isEmpty()) {
+            emptyState.setVisibility(View.VISIBLE);
+        }
+        artworkAdapter.setArtworkList(filteredList);
+    }
     private void performSearch(String query) {
-        artworkAdapter.setArtworkList(new ArrayList<>());
+        allArtworks.clear();
         emptyState.setVisibility(View.GONE);
 
         artworkRepository.searchArtworks(query, new ArtworkRepository.ArtworkCallback() {
             @Override
             public void onSuccess(List<Artwork> artworks) {
+                Log.d("SearchDebug", "searchArtworks() callback fired for query: " + query);
                 progressBar.setVisibility(View.GONE);
                 if (artworks.isEmpty()) {
                     emptyState.setVisibility(View.VISIBLE);
+                } else {
+                    allArtworks.addAll(artworks);
                 }
-                artworkAdapter.setArtworkList(artworks); // update UI
+                artworkAdapter.setArtworkList(allArtworks); // update UI
             }
 
             @Override
@@ -97,6 +163,23 @@ public class SearchFragment extends Fragment {
                 Toast.makeText(getContext(), "Lỗi search: " + error, Toast.LENGTH_SHORT).show();
             }
         });
+    }
+    // Đổi màu category được chọn cho đến khi chuyển sang category khác
+    private void highlightSelectedChip(String type) {
+
+        // Reset màu tất cả chip
+        chipAll.setChipBackgroundColorResource(R.color.brown_100);
+        chipFilterBy.setChipBackgroundColorResource(R.color.brown_100);
+
+        // Đặt màu cho chip hiện tại
+        switch (type) {
+            case "All":
+                chipAll.setChipBackgroundColorResource(R.color.brown_500);
+                break;
+            case "Filter By":
+                chipFilterBy.setChipBackgroundColorResource(R.color.brown_500);
+                break;
+        }
     }
     private void openArtworkDetails(Artwork artwork) {
         Intent intent = new Intent(getActivity(), ArtWork_Details.class);
