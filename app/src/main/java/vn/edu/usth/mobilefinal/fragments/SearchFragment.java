@@ -3,6 +3,7 @@ package vn.edu.usth.mobilefinal.fragments;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -126,7 +127,6 @@ public class SearchFragment extends Fragment {
 
     private void filterArtwork(String type, List<Artwork> allArtworks) {
         emptyState.setVisibility(View.GONE);
-        artworkAdapter.setArtworkList(new ArrayList<>());
 
         // Dùng list mới, không đụng list gốc
         List<Artwork> filteredList = new ArrayList<>();
@@ -142,12 +142,12 @@ public class SearchFragment extends Fragment {
     }
     private void performSearch(String query) {
         allArtworks.clear();
-        artworkAdapter.setArtworkList(new ArrayList<>());
         emptyState.setVisibility(View.GONE);
 
         artworkRepository.searchArtworks(query, new ArtworkRepository.ArtworkCallback() {
             @Override
             public void onSuccess(List<Artwork> artworks) {
+                Log.d("SearchDebug", "searchArtworks() callback fired for query: " + query);
                 progressBar.setVisibility(View.GONE);
                 if (artworks.isEmpty()) {
                     emptyState.setVisibility(View.VISIBLE);
