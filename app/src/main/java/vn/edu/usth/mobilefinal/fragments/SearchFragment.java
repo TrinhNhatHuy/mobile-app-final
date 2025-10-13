@@ -84,10 +84,15 @@ public class SearchFragment extends Fragment {
         recyclerView.setAdapter(artworkAdapter);
 
 
-        chipAll.setOnClickListener(v -> highlightSelectedChip("All"));
-        chipFilterBy.setOnClickListener(v -> highlightSelectedChip("Filter"));
+        chipAll.setOnClickListener(v -> {
+            highlightSelectedChip("All");
+            artworkAdapter.setArtworkList(allArtworks);
+            emptyState.setVisibility(View.GONE);
+            chipFilterBy.setText("Filter By");
+        });
         // Handle when enter FilterBy
         chipFilterBy.setOnClickListener(v -> {
+            highlightSelectedChip("Filter By");
             // Create BottomSheetDialog
             BottomSheetDialog dialog = new BottomSheetDialog(requireContext());
             View sheetView = getLayoutInflater().inflate(R.layout.select_category, null);
@@ -99,12 +104,9 @@ public class SearchFragment extends Fragment {
 
             // Create categories list
             List<String> cities = Arrays.asList(
-                    "Photograph", "Film, Video, New Media", "Glass", "Coin", "Architectural Drawing",
-                    "Decorative Arts", "Miniature room", "Installation", "Arms",
-                    "Mask", "Drawing and Watercolor", "Ceramics",
-                    "Textile", "Armor", "Vessel", "Sculpture", "Painting", "Book",
-                    "Print", "Furniture"
-            );
+                    "Armor", "Book", "Drawing and Watercolor",  "Glass",
+                    "Painting", "Photograph", "Print","Sculpture","Vessel"
+                    );
 
             // Set up adapter
             CategoryAdapter adapter = new CategoryAdapter(cities, category -> {
@@ -123,6 +125,7 @@ public class SearchFragment extends Fragment {
     }
 
     private void filterArtwork(String type, List<Artwork> allArtworks) {
+        emptyState.setVisibility(View.GONE);
         artworkAdapter.setArtworkList(new ArrayList<>());
 
         // Dùng list mới, không đụng list gốc
@@ -131,6 +134,9 @@ public class SearchFragment extends Fragment {
             if (artwork.getCategory() != null && artwork.getCategory().equalsIgnoreCase(type)) {
                 filteredList.add(artwork);
             }
+        }
+        if (filteredList.isEmpty()) {
+            emptyState.setVisibility(View.VISIBLE);
         }
         artworkAdapter.setArtworkList(filteredList);
     }
