@@ -11,9 +11,9 @@ import com.google.firebase.auth.FirebaseUser;
 
 import vn.edu.usth.mobilefinal.R;
 import vn.edu.usth.mobilefinal.adapters.ViewPagerAdapter;
-import vn.edu.usth.mobilefinal.fragments.CollectionFragment;
 import vn.edu.usth.mobilefinal.fragments.FavoritesFragment;
 import vn.edu.usth.mobilefinal.fragments.HomeFragment;
+import vn.edu.usth.mobilefinal.fragments.ProfileFragment;
 import vn.edu.usth.mobilefinal.fragments.SearchFragment;
 
 public class HomeActivity extends AppCompatActivity {
@@ -50,8 +50,8 @@ public class HomeActivity extends AppCompatActivity {
         // Add your fragments
         adapter.addFragment(new HomeFragment(), "Home");
         adapter.addFragment(new SearchFragment(), "Search");
-        adapter.addFragment(new CollectionFragment(), "Explore");
         adapter.addFragment(new FavoritesFragment(), "Favorites");
+        adapter.addFragment(new ProfileFragment(), "Profile");
 
         viewPager.setAdapter(adapter);
     }
@@ -65,9 +65,9 @@ public class HomeActivity extends AppCompatActivity {
                 viewPager.setCurrentItem(0, true);
             } else if (itemId == R.id.nav_search) {
                 viewPager.setCurrentItem(1, true);
-            } else if (itemId == R.id.nav_explore) {
-                viewPager.setCurrentItem(2, true);
             } else if (itemId == R.id.nav_favorites) {
+                viewPager.setCurrentItem(2, true);
+            } else if (itemId == R.id.nav_profile) {
                 viewPager.setCurrentItem(3, true);
             }
             return true;
@@ -83,9 +83,9 @@ public class HomeActivity extends AppCompatActivity {
                 } else if (position == 1) {
                     bottomNavigation.setSelectedItemId(R.id.nav_search);
                 } else if (position == 2) {
-                    bottomNavigation.setSelectedItemId(R.id.nav_explore);
-                } else if (position == 3) {
                     bottomNavigation.setSelectedItemId(R.id.nav_favorites);
+                } else if (position == 3) {
+                    bottomNavigation.setSelectedItemId(R.id.nav_profile);
                 }
             }
         });

@@ -33,7 +33,9 @@
     <com.google.android.material.card.MaterialCardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="20dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
         app:cardCornerRadius="16dp"
         app:cardElevation="2dp"
         app:cardBackgroundColor="#faf5ed">
@@ -83,6 +85,44 @@
         </LinearLayout>
 
     </com.google.android.material.card.MaterialCardView>
+
+    <!-- Artworks Grid Section -->
+    <com.google.android.material.chip.ChipGroup
+        android:id="@+id/chipGroupCategories"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginTop="10dp"
+        app:singleSelection="true">
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/chipAll"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="All"
+            android:textColor="#5D4037"
+            android:textSize="14sp"
+            app:checkedIcon="@null"
+            app:checkedIconEnabled="false"
+            app:chipBackgroundColor="@drawable/chip_canvas_selector"
+            app:chipCornerRadius="16dp" />
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/chipFilterBy"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Filter By"
+            android:textColor="#5D4037"
+            android:textSize="14sp"
+            app:checkedIcon="@null"
+            app:checkedIconEnabled="false"
+            app:chipBackgroundColor="@drawable/chip_canvas_selector"
+            app:chipCornerRadius="16dp" />
+    </com.google.android.material.chip.ChipGroup>
+
+
 
     <!-- Search Results Section -->
     <LinearLayout

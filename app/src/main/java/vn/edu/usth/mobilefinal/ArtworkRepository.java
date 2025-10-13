@@ -101,6 +101,7 @@ public class ArtworkRepository {
         String url = "https://api.artic.edu/api/v1/artworks/search?q=" + encodedQuery +
                 "&fields=id,title,artist_display,date_display,image_id,artwork_type_title&limit=20";
 
+        NetworkHelper.getInstance(context).cancelPendingRequests("search");
         NetworkHelper.getInstance(context).getArtworks(url, new NetworkHelper.VolleyCallback() {
             @Override
             public void onSuccess(String result) {
@@ -111,7 +112,7 @@ public class ArtworkRepository {
                         return;
                     }
                     // Dùng chung helper và gắn category "search"
-                    List<Artwork> artworks = mapResponseToArtworks(response, "search");
+                    List<Artwork> artworks = mapResponseToArtworks(response);
                     callback.onSuccess(artworks);
                 } catch (Exception e) {
                     callback.onError("Parse error: " + e.getMessage());
@@ -122,13 +123,10 @@ public class ArtworkRepository {
             public void onError(String error) {
                 callback.onError("Network error: " + error);
             }
-        });
-    }
-    private List<Artwork> mapResponseToArtworks(ArtworksResponse response) {
-        return mapResponseToArtworks(response, "");
+        }).setTag("search");
     }
 
-    private List<Artwork> mapResponseToArtworks(ArtworksResponse response, String category) {
+    private List<Artwork> mapResponseToArtworks(ArtworksResponse response) {
         List<Artwork> artworks = new ArrayList<>();
         if (response == null || response.data == null) return artworks;
         String iiifUrl = "https://www.artic.edu/iiif/2";
@@ -143,7 +141,7 @@ public class ArtworkRepository {
         for (ArtworksResponse.ArtworkData ad : response.data) {
             String imageUrl = (ad.imageId != null && !ad.imageId.isEmpty())
                     // dùng biến thể width 843 để tối ưu băng thông, đồng nhất với search
-                    ? iiifUrl + "/" + ad.imageId + "/full/843,/0/default.jpg"
+                    ? iiifUrl + "/" + ad.imageId + "/full/!843,843/0/default.jpg"
                     : "";
 
             artworks.add(new Artwork(
@@ -153,7 +151,7 @@ public class ArtworkRepository {
                     imageUrl,
                     ad.dateDisplay != null ? ad.dateDisplay : "",
                     "",
-                    (category == null ? "" : category)
+                    ad.category == null ? "" : ad.category
             ));
         }
         return artworks;
