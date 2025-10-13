@@ -18,6 +18,8 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.chip.Chip;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,6 +35,8 @@ public class SearchFragment extends Fragment {
     private ArtworkRepository artworkRepository;
     private ProgressBar progressBar;
     private LinearLayout emptyState;
+    private Chip chipPhotograph, chipPainting, chipVessel, chipPrint;
+    private List<Artwork> allArtworks = new ArrayList<>();
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -41,6 +45,10 @@ public class SearchFragment extends Fragment {
         EditText searchInput = view.findViewById(R.id.etSearch);
         progressBar = view.findViewById(R.id.progressBar);
         emptyState = view.findViewById(R.id.emptyState);
+        chipPhotograph = view.findViewById(R.id.chipPhotograph);
+        chipPainting = view.findViewById(R.id.chipPainting);
+        chipVessel = view.findViewById(R.id.chipVessel);
+        chipPrint = view.findViewById(R.id.chipPrint);
         RecyclerView recyclerView = view.findViewById(R.id.recyclerSearchResults);
 
         // setup RecyclerView
@@ -74,10 +82,30 @@ public class SearchFragment extends Fragment {
         });
         recyclerView.setAdapter(artworkAdapter);
 
+        // Gắn chip click
+        chipPhotograph.setOnClickListener(v -> filterArtwork("Photograph", allArtworks));
+        chipPainting.setOnClickListener(v -> filterArtwork("Painting", allArtworks));
+        chipPrint.setOnClickListener(v -> filterArtwork("Print", allArtworks));
+        chipVessel.setOnClickListener(v -> filterArtwork("Vessel", allArtworks));
+
         return view;
     }
 
+    private void filterArtwork(String type, List<Artwork> allArtworks) {
+        artworkAdapter.setArtworkList(new ArrayList<>());
+        highlightSelectedChip(type);
+
+        // Dùng list mới, không đụng list gốc
+        List<Artwork> filteredList = new ArrayList<>();
+        for (Artwork artwork : allArtworks) {
+            if (artwork.getCategory() != null && artwork.getCategory().equalsIgnoreCase(type)) {
+                filteredList.add(artwork);
+            }
+        }
+        artworkAdapter.setArtworkList(filteredList);
+    }
     private void performSearch(String query) {
+        allArtworks.clear();
         artworkAdapter.setArtworkList(new ArrayList<>());
         emptyState.setVisibility(View.GONE);
 
@@ -87,8 +115,10 @@ public class SearchFragment extends Fragment {
                 progressBar.setVisibility(View.GONE);
                 if (artworks.isEmpty()) {
                     emptyState.setVisibility(View.VISIBLE);
+                } else {
+                    allArtworks.addAll(artworks);
                 }
-                artworkAdapter.setArtworkList(artworks); // update UI
+                artworkAdapter.setArtworkList(allArtworks); // update UI
             }
 
             @Override
@@ -97,6 +127,31 @@ public class SearchFragment extends Fragment {
                 Toast.makeText(getContext(), "Lỗi search: " + error, Toast.LENGTH_SHORT).show();
             }
         });
+    }
+    // Đổi màu category được chọn cho đến khi chuyển sang category khác
+    private void highlightSelectedChip(String type) {
+
+        // Reset màu tất cả chip
+        chipPhotograph.setChipBackgroundColorResource(R.color.brown_100);
+        chipPainting.setChipBackgroundColorResource(R.color.brown_100);
+        chipPrint.setChipBackgroundColorResource(R.color.brown_100);
+        chipVessel.setChipBackgroundColorResource(R.color.brown_100);
+
+        // Đặt màu cho chip hiện tại
+        switch (type) {
+            case "Photograph":
+                chipPhotograph.setChipBackgroundColorResource(R.color.brown_500);
+                break;
+            case "Painting":
+                chipPainting.setChipBackgroundColorResource(R.color.brown_500);
+                break;
+            case "Print":
+                chipPrint.setChipBackgroundColorResource(R.color.brown_500);
+                break;
+            case "Vessel":
+                chipVessel.setChipBackgroundColorResource(R.color.brown_500);
+                break;
+        }
     }
     private void openArtworkDetails(Artwork artwork) {
         Intent intent = new Intent(getActivity(), ArtWork_Details.class);

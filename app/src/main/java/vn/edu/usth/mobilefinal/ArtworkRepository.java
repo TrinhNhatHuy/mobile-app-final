@@ -111,7 +111,7 @@ public class ArtworkRepository {
                         return;
                     }
                     // Dùng chung helper và gắn category "search"
-                    List<Artwork> artworks = mapResponseToArtworks(response, "search");
+                    List<Artwork> artworks = mapResponseToArtworks(response);
                     callback.onSuccess(artworks);
                 } catch (Exception e) {
                     callback.onError("Parse error: " + e.getMessage());
@@ -178,11 +178,8 @@ public class ArtworkRepository {
             }
         });
     }
-    private List<Artwork> mapResponseToArtworks(ArtworksResponse response) {
-        return mapResponseToArtworks(response, "");
-    }
 
-    private List<Artwork> mapResponseToArtworks(ArtworksResponse response, String category) {
+    private List<Artwork> mapResponseToArtworks(ArtworksResponse response) {
         List<Artwork> artworks = new ArrayList<>();
         if (response == null || response.data == null) return artworks;
         String iiifUrl = "https://www.artic.edu/iiif/2";
@@ -207,7 +204,7 @@ public class ArtworkRepository {
                     imageUrl,
                     ad.dateDisplay != null ? ad.dateDisplay : "",
                     "",
-                    (category == null ? "" : category)
+                    ad.category == null ? "" : ad.category
             ));
         }
         return artworks;
