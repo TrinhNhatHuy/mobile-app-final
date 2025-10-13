@@ -95,7 +95,7 @@ public class ArtworkRepository {
     }
 
     public void searchArtworks(String query, ArtworkCallback callback) {
-        String url = "https://api.artic.edu/api/v1/artworks/search?q=" +
+        String url = "https://api.artic.edu/api/v1/artworks/search?q=" + query +
                 "&fields=id,title,artist_display,date_display,image_id,artwork_type_title&limit=20";
 
         NetworkHelper.getInstance(context).getArtworks(url, new NetworkHelper.VolleyCallback() {
