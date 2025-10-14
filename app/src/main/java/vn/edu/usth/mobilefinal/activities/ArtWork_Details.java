@@ -81,7 +81,7 @@ public class ArtWork_Details extends AppCompatActivity {
             // Tao pointer(path) trong database favorite cua user
             DocumentReference docRef = db.collection("favorites")
                     .document(userId)
-                    .collection("userFavorites")
+                    .collection("artwork")
                     .document(artworkId);
 
             if (isLiked) {
@@ -96,13 +96,16 @@ public class ArtWork_Details extends AppCompatActivity {
                                 Toast.makeText(this, "Error" + e.getMessage(), Toast.LENGTH_SHORT).show());
             } else {
                 // Case chua like
-                Map<String, Object> favoriteData = new HashMap<>();
-                favoriteData.put("artworkId", artworkId);
-                favoriteData.put("artworkTitle", artwork.getTitle());
-                favoriteData.put("userId", userId);
-                favoriteData.put("userEmail", currentUser.getEmail());
+                Map<String, Object> artworkData = new HashMap<>();
+                artworkData.put("artist", artwork.getArtist());
+                artworkData.put("category", artwork.getCategory());
+                artworkData.put("date", artwork.getDate());
+                artworkData.put("description", artwork.getDescription());
+                artworkData.put("id", artwork.getId());
+                artworkData.put("imageUrl", artwork.getImageUrl());
+                artworkData.put("title", artwork.getTitle());
 
-                docRef.set(favoriteData)
+                docRef.set(artworkData)
                         .addOnSuccessListener(aVoid -> {
                             isLiked = true;
                             btnFavorite.setImageResource(R.drawable.ic_favorite_filled);
