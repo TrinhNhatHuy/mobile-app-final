@@ -13,7 +13,6 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -62,11 +61,15 @@ public class ArtWork_Details extends AppCompatActivity {
 
         btnBack.setOnClickListener(v -> finish());
 
-        // Check xem user da dang nhap/dang ky chua -> chua thi ai cho ma like
+        // Check xem artwork da duoc like hay chua
         if (currentUser != null && artwork != null) {
             checkIfLiked(currentUser.getUid(), artwork.getId());
+        } else {
+            // Truong hop user chua log in
+            btnFavorite.setImageResource(R.drawable.ic_favorite_border);
         }
 
+        // Check xem user da dang nhap/dang ky chua -> chua thi ai cho ma like
         btnFavorite.setOnClickListener(v -> {
             if (currentUser == null || artwork == null) {
                 Toast.makeText(this, "Please sign in to like artwork", Toast.LENGTH_SHORT).show();
@@ -102,13 +105,36 @@ public class ArtWork_Details extends AppCompatActivity {
                 docRef.set(favoriteData)
                         .addOnSuccessListener(aVoid -> {
                             isLiked = true;
-                            btnFavorite.setImageResource(R.drawable.ic_favorite);
+                            btnFavorite.setImageResource(R.drawable.ic_favorite_filled);
                             Toast.makeText(this, "Added to favorites", Toast.LENGTH_SHORT).show();
                         })
                         .addOnFailureListener(e ->
                                 Toast.makeText(this, "Error" + e.getMessage(), Toast.LENGTH_SHORT).show());
             }
         });
+
+
+
+    }
+
+    // Check xem artwork da like hay chua
+    private void checkIfLiked(String userId, String artworkId) {
+        db.collection("favorites")
+                .document(userId)
+                .collection("userFavorites")
+                .document(artworkId)
+                .get()
+                .addOnSuccessListener(document -> {
+                    if (document.exists()) {
+                        isLiked = true;
+                        btnFavorite.setImageResource(R.drawable.ic_favorite_filled);
+                    } else {
+                        isLiked = false;
+                        btnFavorite.setImageResource(R.drawable.ic_favorite_border);
+                    }
+                })
+                .addOnFailureListener(e ->
+                        Toast.makeText(this, "Error checking favorite status", Toast.LENGTH_SHORT).show());
     }
 }
 
