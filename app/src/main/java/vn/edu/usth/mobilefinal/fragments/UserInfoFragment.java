@@ -1,6 +1,7 @@
 package vn.edu.usth.mobilefinal.fragments;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -10,6 +11,9 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import vn.edu.usth.mobilefinal.R;
+import vn.edu.usth.mobilefinal.activities.HomeActivity;
+import vn.edu.usth.mobilefinal.activities.Login;
+
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import androidx.annotation.NonNull;
@@ -22,6 +26,7 @@ public class UserInfoFragment extends Fragment {
     private TextView tvUserName;
     private ImageButton logoutButton;
     private FirebaseAuth mAuth;
+    private View userDetails;
 
     @SuppressLint("MissingInflatedId")
     @Nullable
@@ -31,9 +36,17 @@ public class UserInfoFragment extends Fragment {
         tvUserName = view.findViewById(R.id.tvUserName);
         logoutButton = view.findViewById(R.id.logout);
         mAuth = FirebaseAuth.getInstance();
-
+        userDetails = view.findViewById(R.id.user_details);
         loadUserData();
         setupLogoutButton();
+        userDetails.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (getActivity() instanceof HomeActivity) {
+                    ((HomeActivity) getActivity()).switchToProfileTab();
+                }
+            }
+        });
 
         return view;
     }
@@ -60,8 +73,12 @@ public class UserInfoFragment extends Fragment {
         logoutButton.setOnClickListener(v -> {
             mAuth.signOut();
             if (getActivity() != null) {
+                Intent intent = new Intent(getActivity(), Login.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                startActivity(intent);
                 getActivity().finish();
             }
         });
     }
+
 }
