@@ -1,7 +1,6 @@
 package vn.edu.usth.mobilefinal.fragments;
 
 import android.annotation.SuppressLint;
-import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -11,9 +10,6 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import vn.edu.usth.mobilefinal.R;
-import vn.edu.usth.mobilefinal.activities.Login;
-import vn.edu.usth.mobilefinal.activities.MainActivity;
-
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import androidx.annotation.NonNull;
@@ -64,11 +60,6 @@ public class UserInfoFragment extends Fragment {
         logoutButton.setOnClickListener(v -> {
             mAuth.signOut();
             if (getActivity() != null) {
-                // Mở LoginActivity
-                Intent intent = new Intent(getActivity(), MainActivity.class);
-                // Xóa toàn bộ back stack để không quay lại được màn hình trước đó
-                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-                startActivity(intent);
                 getActivity().finish();
             }
         });
