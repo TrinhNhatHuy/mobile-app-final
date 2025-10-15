@@ -86,25 +86,27 @@ public class FavoritesFragment extends Fragment {
         db.collection("favorites")
                 .document(currentUser.getUid())
                 .collection("artwork")
-                .get()
-                .addOnSuccessListener(querySnapshot -> {
-                    favoriteList.clear();
-
-                    for (DocumentSnapshot doc : querySnapshot.getDocuments()) {
-                        Artwork artwork = doc.toObject(Artwork.class);
-                        if (artwork != null) {
-                            favoriteList.add(artwork);
-                        }
+                .addSnapshotListener((querySnapshot, error) -> { // realtime update for favorite
+                    if (error != null) {
+                        progressBar.setVisibility(View.GONE);
+                        Toast.makeText(getContext(), "Error" + error.getMessage(), Toast.LENGTH_SHORT).show();
+                        return;
                     }
 
-                    adapter.notifyDataSetChanged();
-                    progressBar.setVisibility(View.GONE);
+                    if (querySnapshot != null) {
+                        favoriteList.clear();
 
-                    updateUI();
-                })
-                .addOnFailureListener(e -> {
-                    progressBar.setVisibility(View.GONE);
-                    Toast.makeText(getContext(), "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                        for (DocumentSnapshot doc : querySnapshot.getDocuments()) {
+                            Artwork artwork = doc.toObject(Artwork.class);
+                            if (artwork != null) {
+                                favoriteList.add(artwork);
+                            }
+                        }
+
+                        adapter.notifyDataSetChanged();
+                        progressBar.setVisibility(View.GONE);
+                        updateUI();
+                    }
                 });
     }
 
