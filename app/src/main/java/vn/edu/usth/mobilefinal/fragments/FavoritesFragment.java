@@ -34,7 +34,7 @@ public class FavoritesFragment extends Fragment {
 
     private RecyclerView recyclerFavorites;
     private ArtworkAdapter adapter;
-    private List<Artwork> favoriteList = new ArrayList<>();
+    private List<Artwork> favoriteList = new ArrayList<>(); // Store all the favorite artworks from the database
 
     private LinearLayout emptyState;
     private ProgressBar progressBar;
@@ -57,14 +57,14 @@ public class FavoritesFragment extends Fragment {
 
         recyclerFavorites.setLayoutManager(new LinearLayoutManager(getContext()));
         adapter = new ArtworkAdapter(
-                favoriteList,
+                favoriteList, // data source
                 artwork -> {
-                    // When user clicks on an artwork
+                    // When user clicks on an artwork - click listener
                     Intent intent = new Intent(getContext(), ArtWork_Details.class);
                     intent.putExtra("artwork", artwork);
                     startActivity(intent);
                 },
-                R.layout.item_artwork_search // Re-use artwork search chip
+                R.layout.item_artwork_search // Re-use artwork search chip - layout for each items
         );
         recyclerFavorites.setAdapter(adapter);
 
@@ -86,8 +86,8 @@ public class FavoritesFragment extends Fragment {
         db.collection("favorites")
                 .document(currentUser.getUid())
                 .collection("artwork")
-                .addSnapshotListener((querySnapshot, error) -> { // realtime update for favorite
-                    if (error != null) {
+                .addSnapshotListener((querySnapshot, error) -> {   // realtime update for favorite - if any
+                    if (error != null) {                                                                // if any change happen, callback trigger again
                         progressBar.setVisibility(View.GONE);
                         Toast.makeText(getContext(), "Error" + error.getMessage(), Toast.LENGTH_SHORT).show();
                         return;
@@ -97,7 +97,7 @@ public class FavoritesFragment extends Fragment {
                         favoriteList.clear();
 
                         for (DocumentSnapshot doc : querySnapshot.getDocuments()) {
-                            Artwork artwork = doc.toObject(Artwork.class);
+                            Artwork artwork = doc.toObject(Artwork.class); // Convert every Firestore document into an artwork object
                             if (artwork != null) {
                                 favoriteList.add(artwork);
                             }
@@ -130,12 +130,12 @@ public class FavoritesFragment extends Fragment {
                 .collection("artwork")
                 .get()
                 .addOnSuccessListener(querySnapshot -> {
-                    WriteBatch batch = db.batch();
+                    WriteBatch batch = db.batch(); // Firestore class that group multiple operations into a atomic operation (atomic la duoc tat ca hoac huy)
                     for (DocumentSnapshot doc : querySnapshot) {
                         batch.delete(doc.getReference());
                     }
-                    batch.commit().addOnSuccessListener(aVoid -> {
-                        favoriteList.clear();
+                    batch.commit().addOnSuccessListener(aVoid -> { // Execute the atomic operations
+                        favoriteList.clear(); // Remove all the items in the list
                         adapter.notifyDataSetChanged();
                         updateUI();
                         Toast.makeText(getContext(), "All favorites cleared!", Toast.LENGTH_SHORT).show();

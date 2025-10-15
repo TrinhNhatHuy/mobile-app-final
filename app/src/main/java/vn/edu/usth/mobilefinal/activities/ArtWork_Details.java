@@ -43,6 +43,10 @@ public class ArtWork_Details extends AppCompatActivity {
         // Lay databse tu Firebase
         db = FirebaseFirestore.getInstance();
         currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        if (currentUser == null) {
+            Toast.makeText(this, "Please sign in first", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
         // Lấy dữ liệu từ Intent
         Artwork artwork = (Artwork) getIntent().getSerializableExtra("artwork");
@@ -124,7 +128,7 @@ public class ArtWork_Details extends AppCompatActivity {
     private void checkIfLiked(String userId, String artworkId) {
         db.collection("favorites")
                 .document(userId)
-                .collection("userFavorites")
+                .collection("artwork")
                 .document(artworkId)
                 .get()
                 .addOnSuccessListener(document -> {
