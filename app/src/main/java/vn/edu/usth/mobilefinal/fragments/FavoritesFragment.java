@@ -28,6 +28,7 @@ import java.util.ArrayList;
 import vn.edu.usth.mobilefinal.R;
 import vn.edu.usth.mobilefinal.adapters.ArtworkAdapter;
 import vn.edu.usth.mobilefinal.Artwork;
+import vn.edu.usth.mobilefinal.activities.HomeActivity;
 import vn.edu.usth.mobilefinal.activities.ArtWork_Details;
 
 public class FavoritesFragment extends Fragment {
@@ -54,6 +55,13 @@ public class FavoritesFragment extends Fragment {
         progressBar = view.findViewById(R.id.progressBar);
         tvFavoritesCount = view.findViewById(R.id.tvFavoritesCount);
         btnClearFavorites = view.findViewById(R.id.btnClearFavorites);
+        MaterialButton btnExplore = view.findViewById(R.id.btnExplore);
+        btnExplore.setOnClickListener(v -> {
+            HomeActivity activity = (HomeActivity) getActivity();
+            if (activity != null) {
+                activity.switchToHomeTab();
+            }
+        });
 
         recyclerFavorites.setLayoutManager(new LinearLayoutManager(getContext()));
         adapter = new ArtworkAdapter(

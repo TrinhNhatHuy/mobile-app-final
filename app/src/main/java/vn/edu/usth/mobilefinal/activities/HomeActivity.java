@@ -96,6 +96,10 @@ public class HomeActivity extends AppCompatActivity {
         viewPager.setCurrentItem(3, true);
     }
 
+    public  void switchToHomeTab() {
+        viewPager.setCurrentItem(0, true);
+    }
+
 
 
 
