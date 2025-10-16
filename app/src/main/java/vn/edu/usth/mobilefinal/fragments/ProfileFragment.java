@@ -17,13 +17,12 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.ListenerRegistration;
 
 import vn.edu.usth.mobilefinal.R;
-// TODO: import Login activity đúng package nếu khác
 import vn.edu.usth.mobilefinal.activities.Login;
 
 public class ProfileFragment extends Fragment {
 
-    private TextView tvFavoritesCount;   // R.id.tvFavoritesCount trong XML
-    private View logoutButton;           // R.id.optionLogout trong XML
+    private TextView tvFavoritesCount;
+    private View logoutButton;
 
     private FirebaseAuth mAuth;
     private FirebaseFirestore db;
@@ -52,7 +51,7 @@ public class ProfileFragment extends Fragment {
         // Nút logout
         setupLogoutButton();
 
-        // Đếm số favorites realtime theo cấu trúc: favorites/{uid}/artwork
+        // Đếm số favorites
         observeFavoritesCount();
     }
 
