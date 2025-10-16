@@ -61,18 +61,5 @@ public class MainActivity extends AppCompatActivity {
                 }
             });
         }
-
-        // Skip/Continue as guest - navigate to HomeActivity
-        TextView tvSkip = findViewById(R.id.tvSkip);
-        if (tvSkip != null) {
-            tvSkip.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    Intent intent = new Intent(MainActivity.this, HomeActivity.class);
-                    startActivity(intent);
-                    finish(); // Close welcome screen since we're going to home
-                }
-            });
-        }
     }
 }
