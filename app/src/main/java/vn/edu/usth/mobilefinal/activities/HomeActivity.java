@@ -15,6 +15,7 @@ import vn.edu.usth.mobilefinal.fragments.FavoritesFragment;
 import vn.edu.usth.mobilefinal.fragments.HomeFragment;
 import vn.edu.usth.mobilefinal.fragments.ProfileFragment;
 import vn.edu.usth.mobilefinal.fragments.SearchFragment;
+import vn.edu.usth.mobilefinal.fragments.UserInfoFragment;
 
 public class HomeActivity extends AppCompatActivity {
 
@@ -89,6 +90,14 @@ public class HomeActivity extends AppCompatActivity {
                 }
             }
         });
+    }
+
+    public void switchToProfileTab() {
+        viewPager.setCurrentItem(3, true);
+    }
+
+    public  void switchToHomeTab() {
+        viewPager.setCurrentItem(0, true);
     }
 
 
