@@ -84,6 +84,14 @@ public class SearchFragment extends Fragment {
         historyAdapter = new SearchHistoryAdapter(searchHistoryList, query -> {
             searchInput.setText(query);
             searchInput.setSelection(query.length());
+
+            // Ẩn bàn phím
+            InputMethodManager imm = (InputMethodManager) requireContext()
+                    .getSystemService(Context.INPUT_METHOD_SERVICE);
+            if (imm != null) {
+                imm.hideSoftInputFromWindow(searchInput.getWindowToken(), 0);
+            }
+
             performSearch(query);
             rvSearchHistory.setVisibility(View.GONE);
         });
@@ -256,6 +264,7 @@ public class SearchFragment extends Fragment {
                 .document(currentUser.getUid())
                 .collection("queries");
 
+        // check if query is exist or not
         userSearchRef.whereEqualTo("text", query)
                 .limit(1)
                 .get()
