@@ -270,7 +270,6 @@ public class SearchFragment extends Fragment {
                     }
                 })
                 .addOnFailureListener(e -> {
-                    Log.e(TAG, "Error checking existing query", e);
                     addNewSearchQuery(userSearchRef, query);
                 });
     }
@@ -297,7 +296,6 @@ public class SearchFragment extends Fragment {
                             .addOnFailureListener(e -> Log.e(TAG, "Failed to add query", e));
                 })
                 .addOnFailureListener(e -> {
-                    Log.e(TAG, "Failed to check query count", e);
                     Map<String, Object> data = new HashMap<>();
                     data.put("text", query);
                     data.put("timestamp", FieldValue.serverTimestamp());
@@ -338,7 +336,6 @@ public class SearchFragment extends Fragment {
                     isLoadingHistory = false;
                 })
                 .addOnFailureListener(e -> {
-                    Log.e(TAG, "Failed to load search history", e);
                     isLoadingHistory = false;
                 });
     }

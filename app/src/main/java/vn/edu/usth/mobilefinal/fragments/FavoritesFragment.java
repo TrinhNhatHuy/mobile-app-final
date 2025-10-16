@@ -27,7 +27,6 @@ import java.util.List;
 import java.util.ArrayList;
 
 import vn.edu.usth.mobilefinal.R;
-import vn.edu.usth.mobilefinal.SharedViewModel;
 import vn.edu.usth.mobilefinal.adapters.ArtworkAdapter;
 import vn.edu.usth.mobilefinal.Artwork;
 import vn.edu.usth.mobilefinal.activities.HomeActivity;
@@ -46,7 +45,6 @@ public class FavoritesFragment extends Fragment {
 
     private FirebaseFirestore db;
     private FirebaseUser currentUser;
-    private SharedViewModel sharedViewModel;
 
     @Nullable
     @Override
@@ -59,9 +57,6 @@ public class FavoritesFragment extends Fragment {
         tvFavoritesCount = view.findViewById(R.id.tvFavoritesCount);
         btnClearFavorites = view.findViewById(R.id.btnClearFavorites);
         MaterialButton btnExplore = view.findViewById(R.id.btnExplore);
-
-        // lấy ViewModel chung (scope là activity)
-        sharedViewModel = new ViewModelProvider(requireActivity()).get(SharedViewModel.class);
 
         btnExplore.setOnClickListener(v -> {
             HomeActivity activity = (HomeActivity) getActivity();
@@ -135,9 +130,6 @@ public class FavoritesFragment extends Fragment {
             emptyState.setVisibility(View.GONE);
             tvFavoritesCount.setText(favoriteList.size() + " artworks saved");
         }
-
-        // Cập nhật vào ViewModel
-        sharedViewModel.setFavoriteCount(favoriteList.size());
     }
 
     private void clearAllFavorites() {
