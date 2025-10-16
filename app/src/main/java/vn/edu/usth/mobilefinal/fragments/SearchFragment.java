@@ -21,21 +21,39 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.chip.Chip;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FieldValue;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import vn.edu.usth.mobilefinal.Artwork;
 import vn.edu.usth.mobilefinal.ArtworkRepository;
 import vn.edu.usth.mobilefinal.R;
 import vn.edu.usth.mobilefinal.activities.ArtWork_Details;
-import vn.edu.usth.mobilefinal.activities.HomeActivity;
 import vn.edu.usth.mobilefinal.adapters.ArtworkAdapter;
 import vn.edu.usth.mobilefinal.adapters.CategoryAdapter;
+import vn.edu.usth.mobilefinal.adapters.SearchHistoryAdapter;
 
 public class SearchFragment extends Fragment {
+    // Constants
+    private static final String TAG = "SearchFragment";
+
+    // UI Components
+    private EditText searchInput;
+    private RecyclerView rvSearchHistory;
     private ArtworkAdapter artworkAdapter;
+    private SearchHistoryAdapter historyAdapter;
+    private List<String> searchHistoryList = new ArrayList<>();
+    private boolean isLoadingHistory = false;
     private ArtworkRepository artworkRepository;
     private ProgressBar progressBar;
     private LinearLayout emptyState;
@@ -46,79 +64,120 @@ public class SearchFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_search, container, false);
 
-        EditText searchInput = view.findViewById(R.id.etSearch);
+        // Initialize views
+        searchInput = view.findViewById(R.id.etSearch);
         progressBar = view.findViewById(R.id.progressBar);
         emptyState = view.findViewById(R.id.emptyState);
         chipAll = view.findViewById(R.id.chipAll);
         chipFilterBy = view.findViewById(R.id.chipFilterBy);
         RecyclerView recyclerView = view.findViewById(R.id.recyclerSearchResults);
+        rvSearchHistory = view.findViewById(R.id.rvSearchHistory);
 
-        // setup RecyclerView
+        // Setup RecyclerViews for Searched Artworks
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        artworkAdapter = new ArtworkAdapter(new ArrayList<>(), artwork -> openArtworkDetails(artwork), R.layout.item_artwork_search);
+        artworkAdapter = new ArtworkAdapter(new ArrayList<>(), this::openArtworkDetails, R.layout.item_artwork_search);
+        recyclerView.setAdapter(artworkAdapter);
         artworkRepository = new ArtworkRepository(getContext());
 
-        // When user enter the searchText => perform
+        // Setup RecyclerViews for Search History
+        rvSearchHistory.setLayoutManager(new LinearLayoutManager(getContext()));
+        historyAdapter = new SearchHistoryAdapter(searchHistoryList, query -> {
+            searchInput.setText(query);
+            searchInput.setSelection(query.length());
+            performSearch(query);
+            rvSearchHistory.setVisibility(View.GONE);
+        });
+        rvSearchHistory.setAdapter(historyAdapter);
+
+        // Search action listener
         searchInput.setOnEditorActionListener((v, actionId, event) -> {
-            // Kiểm tra xem có đúng là người dùng bấm nút OK/Search/Done không
             if (actionId == EditorInfo.IME_ACTION_SEARCH ||
                     actionId == EditorInfo.IME_ACTION_DONE ||
                     (event != null && event.getKeyCode() == KeyEvent.KEYCODE_ENTER)) {
 
                 String query = searchInput.getText().toString().trim();
-
                 if (!query.isEmpty()) {
                     progressBar.setVisibility(View.VISIBLE);
+                    rvSearchHistory.setVisibility(View.GONE);
                     performSearch(query);
 
-                    // Ẩn bàn phím
+                    // Hide keyboard
                     InputMethodManager imm = (InputMethodManager) requireContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-                    imm.hideSoftInputFromWindow(searchInput.getWindowToken(), 0);
+                    if (imm != null) {
+                        imm.hideSoftInputFromWindow(searchInput.getWindowToken(), 0);
+                    }
+
+                    saveSearchHistory(query);
                 } else {
-                    Toast.makeText(getContext(), "Nhập từ khóa để tìm kiếm", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), "Enter search input", Toast.LENGTH_SHORT).show();
                 }
-                return true; // đã xử lý xong sự kiện
+                return true;
+            }
+            return false;
+        });
+
+        // Focus change listener
+        searchInput.setOnFocusChangeListener((v, hasFocus) -> {
+            if (hasFocus && searchInput.getText().toString().trim().isEmpty()) {
+                loadRecentSearches();
+            } else {
+                rvSearchHistory.setVisibility(View.GONE);
+            }
+        });
+
+        // Text change listener
+        searchInput.addTextChangedListener(new android.text.TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (searchInput.hasFocus()) {
+                    if (s.toString().trim().isEmpty()) {
+                        if (!searchHistoryList.isEmpty()) {
+                            rvSearchHistory.setVisibility(View.VISIBLE);
+                        } else {
+                            loadRecentSearches();
+                        }
+                    } else {
+                        rvSearchHistory.setVisibility(View.GONE);
+                    }
+                }
             }
 
-            return false; // chưa xử lý gì
+            @Override
+            public void afterTextChanged(android.text.Editable s) {}
         });
-        recyclerView.setAdapter(artworkAdapter);
 
-
+        // Chip listeners
         chipAll.setOnClickListener(v -> {
             highlightSelectedChip("All");
             artworkAdapter.setArtworkList(allArtworks);
             emptyState.setVisibility(View.GONE);
             chipFilterBy.setText("Filter By");
         });
-        // Handle when enter FilterBy
+
         chipFilterBy.setOnClickListener(v -> {
             highlightSelectedChip("Filter By");
-            // Create BottomSheetDialog
             BottomSheetDialog dialog = new BottomSheetDialog(requireContext());
             View sheetView = getLayoutInflater().inflate(R.layout.select_category, null);
             dialog.setContentView(sheetView);
 
-            // Map RecyclerView
             RecyclerView rvCategories = sheetView.findViewById(R.id.rvCategories);
             rvCategories.setLayoutManager(new LinearLayoutManager(getContext()));
 
-            // Create categories list
-            List<String> cities = Arrays.asList(
-                    "Armor", "Book", "Drawing and Watercolor",  "Glass",
-                    "Painting", "Photograph", "Print","Sculpture","Vessel"
-                    );
+            List<String> categories = Arrays.asList(
+                    "Armor", "Book", "Drawing and Watercolor", "Glass",
+                    "Painting", "Photograph", "Print", "Sculpture", "Vessel"
+            );
 
-            // Set up adapter
-            CategoryAdapter adapter = new CategoryAdapter(cities, category -> {
+            CategoryAdapter adapter = new CategoryAdapter(categories, category -> {
                 chipFilterBy.setText(category);
                 filterArtwork(category, allArtworks);
                 dialog.dismiss();
             });
 
             rvCategories.setAdapter(adapter);
-
-            // Show popup
             dialog.show();
         });
 
@@ -127,19 +186,20 @@ public class SearchFragment extends Fragment {
 
     private void filterArtwork(String type, List<Artwork> allArtworks) {
         emptyState.setVisibility(View.GONE);
-
-        // Dùng list mới, không đụng list gốc
         List<Artwork> filteredList = new ArrayList<>();
+
         for (Artwork artwork : allArtworks) {
             if (artwork.getCategory() != null && artwork.getCategory().equalsIgnoreCase(type)) {
                 filteredList.add(artwork);
             }
         }
+
         if (filteredList.isEmpty()) {
             emptyState.setVisibility(View.VISIBLE);
         }
         artworkAdapter.setArtworkList(filteredList);
     }
+
     private void performSearch(String query) {
         allArtworks.clear();
         emptyState.setVisibility(View.GONE);
@@ -147,31 +207,27 @@ public class SearchFragment extends Fragment {
         artworkRepository.searchArtworks(query, new ArtworkRepository.ArtworkCallback() {
             @Override
             public void onSuccess(List<Artwork> artworks) {
-                Log.d("SearchDebug", "searchArtworks() callback fired for query: " + query);
                 progressBar.setVisibility(View.GONE);
                 if (artworks.isEmpty()) {
                     emptyState.setVisibility(View.VISIBLE);
                 } else {
                     allArtworks.addAll(artworks);
                 }
-                artworkAdapter.setArtworkList(allArtworks); // update UI
+                artworkAdapter.setArtworkList(allArtworks);
             }
 
             @Override
             public void onError(String error) {
                 progressBar.setVisibility(View.GONE);
-                Toast.makeText(getContext(), "Lỗi search: " + error, Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), "Search error: " + error, Toast.LENGTH_SHORT).show();
             }
         });
     }
-    // Đổi màu category được chọn cho đến khi chuyển sang category khác
-    private void highlightSelectedChip(String type) {
 
-        // Reset màu tất cả chip
+    private void highlightSelectedChip(String type) {
         chipAll.setChipBackgroundColorResource(R.color.brown_100);
         chipFilterBy.setChipBackgroundColorResource(R.color.brown_100);
 
-        // Đặt màu cho chip hiện tại
         switch (type) {
             case "All":
                 chipAll.setChipBackgroundColorResource(R.color.brown_500);
@@ -181,9 +237,122 @@ public class SearchFragment extends Fragment {
                 break;
         }
     }
+
+    private void saveSearchHistory(String query) {
+        searchHistoryList.remove(query);
+        searchHistoryList.add(0, query);
+
+        while (searchHistoryList.size() > 5) {
+            searchHistoryList.remove(searchHistoryList.size() - 1);
+        }
+
+        historyAdapter.notifyDataSetChanged();
+
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        if (currentUser == null) return;
+
+        CollectionReference userSearchRef = FirebaseFirestore.getInstance()
+                .collection("search_history")
+                .document(currentUser.getUid())
+                .collection("queries");
+
+        userSearchRef.whereEqualTo("text", query)
+                .limit(1)
+                .get()
+                .addOnSuccessListener(snapshot -> {
+                    if (!snapshot.isEmpty()) {
+                        DocumentSnapshot existingDoc = snapshot.getDocuments().get(0);
+                        existingDoc.getReference().update("timestamp", FieldValue.serverTimestamp())
+                                .addOnSuccessListener(aVoid -> Log.d(TAG, "Updated timestamp: " + query))
+                                .addOnFailureListener(e -> Log.e(TAG, "Failed to update timestamp", e));
+                    } else {
+                        addNewSearchQuery(userSearchRef, query);
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    Log.e(TAG, "Error checking existing query", e);
+                    addNewSearchQuery(userSearchRef, query);
+                });
+    }
+
+    private void addNewSearchQuery(CollectionReference userSearchRef, String query) {
+        userSearchRef.orderBy("timestamp", Query.Direction.DESCENDING)
+                .get()
+                .addOnSuccessListener(allDocsSnapshot -> {
+                    List<DocumentSnapshot> docs = allDocsSnapshot.getDocuments();
+
+                    if (docs.size() >= 5) {
+                        DocumentSnapshot oldest = docs.get(docs.size() - 1);
+                        oldest.getReference().delete()
+                                .addOnSuccessListener(aVoid -> Log.d(TAG, "Removed oldest query"))
+                                .addOnFailureListener(e -> Log.e(TAG, "Failed to delete oldest", e));
+                    }
+
+                    Map<String, Object> data = new HashMap<>();
+                    data.put("text", query);
+                    data.put("timestamp", FieldValue.serverTimestamp());
+
+                    userSearchRef.add(data)
+                            .addOnSuccessListener(ref -> Log.d(TAG, "Added query: " + query))
+                            .addOnFailureListener(e -> Log.e(TAG, "Failed to add query", e));
+                })
+                .addOnFailureListener(e -> {
+                    Log.e(TAG, "Failed to check query count", e);
+                    Map<String, Object> data = new HashMap<>();
+                    data.put("text", query);
+                    data.put("timestamp", FieldValue.serverTimestamp());
+                    userSearchRef.add(data);
+                });
+    }
+
+    private void loadRecentSearches() {
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        if (currentUser == null || isLoadingHistory) return;
+
+        isLoadingHistory = true;
+
+        FirebaseFirestore.getInstance()
+                .collection("search_history")
+                .document(currentUser.getUid())
+                .collection("queries")
+                .orderBy("timestamp", Query.Direction.DESCENDING)
+                .limit(5)
+                .get()
+                .addOnSuccessListener(snapshot -> {
+                    searchHistoryList.clear();
+                    for (DocumentSnapshot doc : snapshot.getDocuments()) {
+                        String text = doc.getString("text");
+                        if (text != null && !searchHistoryList.contains(text)) {
+                            searchHistoryList.add(text);
+                        }
+                    }
+
+                    historyAdapter.notifyDataSetChanged();
+
+                    if (getView() != null && searchInput.hasFocus() &&
+                            searchInput.getText().toString().trim().isEmpty() &&
+                            !searchHistoryList.isEmpty()) {
+                        rvSearchHistory.setVisibility(View.VISIBLE);
+                    }
+
+                    isLoadingHistory = false;
+                })
+                .addOnFailureListener(e -> {
+                    Log.e(TAG, "Failed to load search history", e);
+                    isLoadingHistory = false;
+                });
+    }
+
     private void openArtworkDetails(Artwork artwork) {
         Intent intent = new Intent(getActivity(), ArtWork_Details.class);
         intent.putExtra("artwork", artwork);
         startActivity(intent);
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        artworkAdapter = null;
+        historyAdapter = null;
     }
 }
