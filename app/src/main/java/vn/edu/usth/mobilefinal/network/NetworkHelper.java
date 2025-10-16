@@ -51,7 +51,7 @@ public class NetworkHelper {
                 callback::onSuccess,
                 error -> callback.onError(error.toString()));
         addToRequestQueue(stringRequest);
-        return stringRequest; // ✅ Trả về request để có thể .setTag() bên ngoài
+        return stringRequest;
     }
 } //Đây chỉ là tạo một object StringRequest, nó chưa gửi request.
 //Bạn chỉ đang khai báo “tôi muốn gửi GET request tới url này và xử lý response bằng callback này”.
