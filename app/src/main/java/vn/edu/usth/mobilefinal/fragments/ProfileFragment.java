@@ -21,9 +21,13 @@ import vn.edu.usth.mobilefinal.activities.Login;
 
 public class ProfileFragment extends Fragment {
 
+    // Views
     private TextView tvFavoritesCount;
+    private TextView tvUserEmail;   // <-- thêm
+    private TextView tvUserName;    // <-- optional: điền tên nếu có
     private View logoutButton;
 
+    // Firebase
     private FirebaseAuth mAuth;
     private FirebaseFirestore db;
     private ListenerRegistration favoritesListener;
@@ -40,19 +44,51 @@ public class ProfileFragment extends Fragment {
     public void onViewCreated(@NonNull View v, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(v, savedInstanceState);
 
-        // Map view
+        // Map view đúng theo XML bạn gửi
         tvFavoritesCount = v.findViewById(R.id.tvFavoritesCount);
+        tvUserEmail      = v.findViewById(R.id.tvUserEmail);
+        tvUserName       = v.findViewById(R.id.tvUserName);
         logoutButton     = v.findViewById(R.id.optionLogout);
 
         // Firebase
         mAuth = FirebaseAuth.getInstance();
         db    = FirebaseFirestore.getInstance();
 
-        // Nút logout
+
+        bindUserIdentity();
+
         setupLogoutButton();
 
-        // Đếm số favorites
         observeFavoritesCount();
+    }
+
+    private void bindUserIdentity() {
+        FirebaseUser user = mAuth.getCurrentUser();
+        if (user == null) {
+            if (tvUserEmail != null) tvUserEmail.setText("user@example.com");
+            if (tvUserName  != null) tvUserName.setText("Art Lover");
+            return;
+        }
+
+        String email = user.getEmail();
+        if (tvUserEmail != null) {
+            tvUserEmail.setText(email != null && !email.isEmpty() ? email : "user@example.com");
+        }
+
+        String displayName = user.getDisplayName();
+        if (tvUserName != null) {
+            if (displayName != null && !displayName.trim().isEmpty()) {
+                tvUserName.setText(displayName.trim());
+            } else {
+                // fallback theo tiền tố email hoặc mặc định
+                if (email != null && email.contains("@")) {
+                    String prefix = email.substring(0, email.indexOf('@')).trim();
+                    tvUserName.setText(prefix.isEmpty() ? "Art Lover" : prefix);
+                } else {
+                    tvUserName.setText("Art Lover");
+                }
+            }
+        }
     }
 
     private void setupLogoutButton() {
@@ -83,6 +119,7 @@ public class ProfileFragment extends Fragment {
                 .addSnapshotListener((querySnapshot, e) -> {
                     if (!isAdded() || tvFavoritesCount == null) return;
                     if (e != null || querySnapshot == null) {
+                        // Có lỗi có thể giữ nguyên số đang hiển thị hoặc set "0"
                         return;
                     }
                     tvFavoritesCount.setText(String.valueOf(querySnapshot.size()));
