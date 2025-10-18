@@ -65,14 +65,14 @@ public class FavoritesFragment extends Fragment {
             }
         });
 
-        recyclerFavorites.setLayoutManager(new LinearLayoutManager(getContext()));
+        recyclerFavorites.setLayoutManager(new LinearLayoutManager(getContext())); // how items in recycle view arranged
         adapter = new ArtworkAdapter(
                 favoriteList, // data source
                 artwork -> {
                     // When user clicks on an artwork - click listener
                     Intent intent = new Intent(getContext(), ArtWork_Details.class);
                     intent.putExtra("artwork", artwork);
-                    startActivity(intent);
+                    startActivity(intent); // Create a new intent to open Artwork_detail, passing the artwork as data
                 },
                 R.layout.item_artwork_search // Re-use artwork search chip - layout for each items
         );
@@ -109,13 +109,13 @@ public class FavoritesFragment extends Fragment {
                         for (DocumentSnapshot doc : querySnapshot.getDocuments()) {
                             Artwork artwork = doc.toObject(Artwork.class); // Convert every Firestore document into an artwork object
                             if (artwork != null) {
-                                favoriteList.add(artwork);
+                                favoriteList.add(artwork); // update lai favorisList
                             }
                         }
 
-                        adapter.notifyDataSetChanged();
+                        adapter.notifyDataSetChanged(); // Thong bao voi adapter rang favoriteList da duoc update
                         progressBar.setVisibility(View.GONE);
-                        updateUI();
+                        updateUI(); // Change if the FavorlistList is empty or not (if null -> display empty state and the other way around)
                     }
                 });
     }
@@ -140,7 +140,7 @@ public class FavoritesFragment extends Fragment {
                 .collection("artwork")
                 .get()
                 .addOnSuccessListener(querySnapshot -> {
-                    WriteBatch batch = db.batch(); // Firestore class that group multiple operations into a atomic operation (atomic la duoc tat ca hoac huy)
+                    WriteBatch batch = db.batch(); // Firestore class that group multiple operations into an atomic operation (atomic la duoc tat ca hoac huy)
                     for (DocumentSnapshot doc : querySnapshot) {
                         batch.delete(doc.getReference());
                     }
